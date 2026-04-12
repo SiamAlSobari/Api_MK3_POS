@@ -10,12 +10,31 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function register(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:6'],
+        ]);
+
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => $data['password'],
+        ]);
+
+        return response()->json([
+            'message' => 'Register berhasil.',
+            'user' => $user,
+        ], 201);
+    }
+
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
-            'device_name' => ['nullable', 'string', 'max:255'],
         ]);
 
         $user = User::where('email', $credentials['email'])->first();
@@ -26,7 +45,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken($credentials['device_name'] ?? 'mobile-app')->plainTextToken;
+        $token = $user->createToken('mobile-app')->plainTextToken;
 
         return response()->json([
             'message' => 'Login berhasil.',
