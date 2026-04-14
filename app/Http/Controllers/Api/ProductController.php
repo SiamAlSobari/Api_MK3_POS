@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class ProductController extends Controller
 {
@@ -17,8 +18,8 @@ class ProductController extends Controller
         $products = Product::all();
 
         return response()->json([
-            'message' => 'Products retrieved successfully.',
-            'data' => $products,
+            "message" => "Products retrieved successfully.",
+            "data" => $products,
         ]);
     }
 
@@ -28,18 +29,56 @@ class ProductController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'description' => ['nullable', 'string'],
-            'stock' => ['required', 'integer', 'min:0'],
+            "name" => ["required", "string", "max:255"],
+            "price" => ["required", "numeric", "min:0"],
+            "description" => ["nullable", "string"],
+            "stock" => ["required", "integer", "min:0"],
+            "image" => ["nullable", "image", "max:2048"],
         ]);
+
+        if ($request->hasFile("image")) {
+            try {
+                $file = $request->file("image");
+
+                $cloudName = env("CLOUDINARY_CLOUD_NAME");
+                $apiKey = env("CLOUDINARY_API_KEY");
+                $apiSecret = env("CLOUDINARY_API_SECRET");
+
+                $response = Http::asMultipart()
+                    ->withBasicAuth($apiKey, $apiSecret)
+                    ->post(
+                        "https://api.cloudinary.com/v1_1/{$cloudName}/image/upload",
+                        [
+                            "file" => fopen($file->getRealPath(), "r"),
+                            "folder" => "pos_products",
+                        ],
+                    );
+
+                if ($response->successful()) {
+                    $data["image_url"] = $response->json()["secure_url"];
+                } else {
+                    return response()->json(
+                        [
+                            "error" => "Upload Cloudinary Gagal",
+                            "detail" => $response->json(),
+                        ],
+                        500,
+                    );
+                }
+            } catch (\Exception $e) {
+                return response()->json(["error" => $e->getMessage()], 500);
+            }
+        }
 
         $product = Product::create($data);
 
-        return response()->json([
-            'message' => 'Product created successfully.',
-            'data' => $product,
-        ], 201);
+        return response()->json(
+            [
+                "message" => "Product created successfully.",
+                "data" => $product,
+            ],
+            201,
+        );
     }
 
     /**
@@ -48,8 +87,8 @@ class ProductController extends Controller
     public function show(Product $product): JsonResponse
     {
         return response()->json([
-            'message' => 'Product retrieved successfully.',
-            'data' => $product,
+            "message" => "Product retrieved successfully.",
+            "data" => $product,
         ]);
     }
 
@@ -59,17 +98,17 @@ class ProductController extends Controller
     public function update(Request $request, Product $product): JsonResponse
     {
         $data = $request->validate([
-            'name' => ['string', 'max:255'],
-            'price' => ['numeric', 'min:0'],
-            'description' => ['nullable', 'string'],
-            'stock' => ['integer', 'min:0'],
+            "name" => ["string", "max:255"],
+            "price" => ["numeric", "min:0"],
+            "description" => ["nullable", "string"],
+            "stock" => ["integer", "min:0"],
         ]);
 
         $product->update($data);
 
         return response()->json([
-            'message' => 'Product updated successfully.',
-            'data' => $product->fresh(),
+            "message" => "Product updated successfully.",
+            "data" => $product->fresh(),
         ]);
     }
 
@@ -81,8 +120,7 @@ class ProductController extends Controller
         $product->delete();
 
         return response()->json([
-            'message' => 'Product deleted successfully.',
+            "message" => "Product deleted successfully.",
         ]);
     }
 }
-
