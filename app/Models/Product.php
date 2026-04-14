@@ -10,14 +10,14 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'price',
-        'description',
-        'stock',
+        "name",
+        "price",
+        "description",
+        "stock",
+        "image_url",
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        "price" => "decimal:2",
     ];
 }
-
