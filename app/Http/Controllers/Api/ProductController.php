@@ -15,7 +15,7 @@ class ProductController extends Controller
      */
     public function index(): JsonResponse
     {
-        $products = Product::all();
+        $products = Product::with('category')->get();
 
         return response()->json([
             "message" => "Products retrieved successfully.",
@@ -34,6 +34,7 @@ class ProductController extends Controller
             "description" => ["nullable", "string"],
             "stock" => ["required", "integer", "min:0"],
             "image" => ["nullable", "image", "max:2048"],
+            "category_id" => ["nullable", "exists:categories,id"],
         ]);
 
         if ($request->hasFile("image")) {
@@ -102,6 +103,7 @@ class ProductController extends Controller
             "price" => ["numeric", "min:0"],
             "description" => ["nullable", "string"],
             "stock" => ["integer", "min:0"],
+            "category_id" => ["nullable", "exists:categories,id"],
         ]);
 
         $product->update($data);
