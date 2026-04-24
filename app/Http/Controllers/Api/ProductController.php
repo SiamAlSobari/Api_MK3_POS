@@ -15,7 +15,7 @@ class ProductController extends Controller
      */
     public function index(): JsonResponse
     {
-        $products = Product::with('category')->get();
+        $products = Product::with(["category", "stocks"])->get();
 
         return response()->json([
             "message" => "Products retrieved successfully.",
@@ -73,6 +73,10 @@ class ProductController extends Controller
 
         $product = Product::create($data);
 
+        $product->stocks()->create([
+            "stock_on_hand" => $data["stock"],
+        ]);
+
         return response()->json(
             [
                 "message" => "Product created successfully.",
@@ -87,6 +91,8 @@ class ProductController extends Controller
      */
     public function show(Product $product): JsonResponse
     {
+        $product->load(["category", "stocks"]);
+
         return response()->json([
             "message" => "Product retrieved successfully.",
             "data" => $product,
