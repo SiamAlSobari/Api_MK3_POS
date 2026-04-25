@@ -14,10 +14,11 @@ class Category extends Model
         'name',
         'description',
         'isActive',
+        'user_id',
     ];
 
-    public function products(): HasMany
+    public function products() 
     {
-        return $this->hasMany(Product::class);
+    return $this->hasMany(Product::class);
     }
 }
