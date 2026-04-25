@@ -80,4 +80,22 @@ class CategoryController extends Controller
             'message' => 'Category deleted successfully.',
         ]);
     }
+
+    public function updateStatus(Request $request, $id)
+    {
+    $category = Category::find($id);
+
+    if (!$category) {
+        return response()->json(['message' => 'Kategori tidak ditemukan'], 404);
+    }
+
+    $category->update([
+        'isActive' => $request->isActive
+    ]);
+
+    return response()->json([
+        'message' => 'Status kategori berhasil diubah!',
+        'data' => $category
+    ]);
+    }
 }
