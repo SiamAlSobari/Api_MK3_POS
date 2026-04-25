@@ -13,23 +13,26 @@ class CategoryController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    // Menggunakan $request->user()->id agar aman dari error 'undefined method id'
-    $userId = $request->user()->id ?? 1; 
-    $search = $request->query('search');
+    {
+        $userId = $request->user()->id;
 
-    $categories = Category::with('products') // Ini untuk +products
-        ->where('user_id', $userId) // Filter berdasarkan user login
-        ->when($search, function($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%'); // Fitur cari
-        })
-        ->get();
+        $categories = Category::where("user_id", $userId)->get();
 
-    return response()->json([
-        'message' => 'Daftar kategori berhasil diambil',
-        'data' => $categories
-    ]);
-}
+        return response()->json([
+            "message" => "Daftar kategori berhasil diambil",
+            "data" => $categories,
+        ]);
+    }
+
+    public function getCategoriesWithProducts(Request $request): JsonResponse
+    {
+        $categories = $request->user()->categories()->with("products")->get();
+
+        return response()->json([
+            "message" => "Daftar kategori berhasil diambil",
+            "data" => $categories,
+        ]);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -37,16 +40,19 @@ class CategoryController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
+            "name" => ["required", "string", "max:255"],
+            "description" => ["nullable", "string"],
         ]);
 
         $category = Category::create($data);
 
-        return response()->json([
-            'message' => 'Category created successfully.',
-            'data' => $category,
-        ], 201);
+        return response()->json(
+            [
+                "message" => "Category created successfully.",
+                "data" => $category,
+            ],
+            201,
+        );
     }
 
     /**
@@ -55,8 +61,8 @@ class CategoryController extends Controller
     public function show(Category $category): JsonResponse
     {
         return response()->json([
-            'message' => 'Category retrieved successfully.',
-            'data' => $category,
+            "message" => "Category retrieved successfully.",
+            "data" => $category,
         ]);
     }
 
@@ -66,15 +72,15 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category): JsonResponse
     {
         $data = $request->validate([
-            'name' => ['string', 'max:255'],
-            'description' => ['nullable', 'string'],
+            "name" => ["string", "max:255"],
+            "description" => ["nullable", "string"],
         ]);
 
         $category->update($data);
 
         return response()->json([
-            'message' => 'Category updated successfully.',
-            'data' => $category->fresh(),
+            "message" => "Category updated successfully.",
+            "data" => $category->fresh(),
         ]);
     }
 
@@ -86,25 +92,28 @@ class CategoryController extends Controller
         $category->delete();
 
         return response()->json([
-            'message' => 'Category deleted successfully.',
+            "message" => "Category deleted successfully.",
         ]);
     }
 
     public function updateStatus(Request $request, $id)
     {
-    $category = Category::find($id);
+        $category = Category::find($id);
 
-    if (!$category) {
-        return response()->json(['message' => 'Kategori tidak ditemukan'], 404);
-    }
+        if (!$category) {
+            return response()->json(
+                ["message" => "Kategori tidak ditemukan"],
+                404,
+            );
+        }
 
-    $category->update([
-        'isActive' => $request->isActive
-    ]);
+        $category->update([
+            "isActive" => $request->isActive,
+        ]);
 
-    return response()->json([
-        'message' => 'Status kategori berhasil diubah!',
-        'data' => $category
-    ]);
+        return response()->json([
+            "message" => "Status kategori berhasil diubah!",
+            "data" => $category,
+        ]);
     }
 }

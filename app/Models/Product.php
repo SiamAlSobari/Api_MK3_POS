@@ -19,6 +19,7 @@ class Product extends Model
         "image_url",
         "category_id",
         "is_active",
+        "user_id",
     ];
 
     protected $casts = [
@@ -29,6 +30,11 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function stocks(): HasMany
