@@ -12,15 +12,24 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
-    {
-        $categories = Category::all();
+    public function index(Request $request)
+{
+    // Menggunakan $request->user()->id agar aman dari error 'undefined method id'
+    $userId = $request->user()->id ?? 1; 
+    $search = $request->query('search');
 
-        return response()->json([
-            'message' => 'Categories retrieved successfully.',
-            'data' => $categories,
-        ]);
-    }
+    $categories = Category::with('products') // Ini untuk +products
+        ->where('user_id', $userId) // Filter berdasarkan user login
+        ->when($search, function($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%'); // Fitur cari
+        })
+        ->get();
+
+    return response()->json([
+        'message' => 'Daftar kategori berhasil diambil',
+        'data' => $categories
+    ]);
+}
 
     /**
      * Store a newly created resource in storage.
