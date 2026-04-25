@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CategoryController;
 
 Route::prefix('auth')->group(function (): void {
     Route::post('/login', [AuthController::class, 'login']);
@@ -25,3 +26,4 @@ Route::get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->apiResource('products', App\Http\Controllers\Api\ProductController::class);
 Route::middleware('auth:sanctum')->apiResource('categories', App\Http\Controllers\Api\CategoryController::class);
 
+Route::patch('categories/{id}/status', [CategoryController::class, 'updateStatus']);
