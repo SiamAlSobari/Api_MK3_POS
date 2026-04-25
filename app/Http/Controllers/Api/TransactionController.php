@@ -61,4 +61,29 @@ class TransactionController extends Controller
             ], 201);
         });
     }
+    // 1. Fungsi untuk melihat riwayat semua transaksi (History)
+public function index()
+{
+    $transactions = Transaction::with('user')->get(); // Mengambil semua transaksi beserta data kasirnya [cite: 14]
+    return response()->json([
+        'message' => 'Daftar riwayat transaksi berhasil diambil',
+        'data' => $transactions
+    ]);
+}
+
+// 2. Fungsi untuk melihat detail satu transaksi (Detail)
+public function show($id)
+{
+    // Mengambil transaksi tertentu beserta item barang dan data produknya [cite: 15, 27]
+    $transaction = Transaction::with(['user', 'items.product'])->find($id);
+
+    if (!$transaction) {
+        return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
+    }
+
+    return response()->json([
+        'message' => 'Detail transaksi berhasil ditemukan',
+        'data' => $transaction
+    ]);
+}
 }

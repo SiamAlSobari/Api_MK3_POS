@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\TransactionController;
 
 Route::prefix('auth')->group(function (): void {
     Route::post('/login', [AuthController::class, 'login']);
@@ -27,3 +28,6 @@ Route::middleware('auth:sanctum')->apiResource('products', App\Http\Controllers\
 Route::middleware('auth:sanctum')->apiResource('categories', App\Http\Controllers\Api\CategoryController::class);
 
 Route::patch('categories/{id}/status', [CategoryController::class, 'updateStatus']);
+
+Route::get('transactions', [TransactionController::class, 'index']); // Untuk History
+Route::get('transactions/{id}', [TransactionController::class, 'show']); // Untuk Detail

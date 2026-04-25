@@ -14,12 +14,12 @@ class Transaction extends Model
         'payment_method', 'paid_at', 'total_amount'
     ];
 
-    // Relasi: 1 transaksi dimiliki oleh 1 user [cite: 14, 29]
+    // Relasi: 1 transaksi dimiliki oleh 1 user 
     public function user() {
         return $this->belongsTo(User::class);
     }
 
-    // Relasi: 1 transaksi memiliki banyak item [cite: 15, 31]
+    // Relasi: 1 transaksi memiliki banyak item 
     public function items() {
         return $this->hasMany(TransactionItem::class);
     }
