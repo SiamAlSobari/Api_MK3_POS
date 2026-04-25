@@ -26,8 +26,11 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->apiResource('products', App\Http\Controllers\Api\ProductController::class);
 Route::middleware('auth:sanctum')->apiResource('categories', App\Http\Controllers\Api\CategoryController::class);
-
 Route::patch('categories/{id}/status', [CategoryController::class, 'updateStatus']);
+Route::patch('categories/products', [CategoryController::class, 'getCategoriesWithProducts']);
 
-Route::get('transactions', [TransactionController::class, 'index']); // Untuk History
-Route::get('transactions/{id}', [TransactionController::class, 'show']); // Untuk Detail
+Route::middleware('auth:sanctum')->prefix('transactions')->group(function () {
+    Route::get('/', [TransactionController::class, 'index']);     // list / history
+    Route::get('/{id}', [TransactionController::class, 'show']);  // detail
+    Route::post('/', [TransactionController::class, 'store']);    // Simpan Transaksi Baru / Adjustment
+});

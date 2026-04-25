@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Transaction;
+use App\Models\TransactionItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class ProductController extends Controller
@@ -13,9 +16,11 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $products = Product::with(["category", "stocks"])->get();
+        $products = Product::where("user_id", $request->user()->id)
+            ->with(["category", "stocks"])
+            ->get();
 
         return response()->json([
             "message" => "Products retrieved successfully.",
@@ -36,6 +41,8 @@ class ProductController extends Controller
             "image" => ["nullable", "image", "max:2048"],
             "category_id" => ["nullable", "exists:categories,id"],
         ]);
+
+        $data["user_id"] = $request->user()->id;
 
         if ($request->hasFile("image")) {
             try {
@@ -71,11 +78,37 @@ class ProductController extends Controller
             }
         }
 
-        $product = Product::create($data);
+        $product =DB::transaction(function () use (
+            $data,
+            $request,
+        ) {
+            $product = Product::create($data);
 
-        $product->stocks()->create([
-            "stock_on_hand" => $data["stock"],
-        ]);
+            $product->stocks()->create([
+                "stock_on_hand" => $data["stock"],
+            ]);
+
+            if ($data["stock"] > 0) {
+                $transaction = Transaction::create([
+                    "user_id" => $request->user()->id,
+                    "trx_type" => "PURCHASE",
+                    "trx_date" => now(),
+                    "payment_method" => "CASH",
+                    "paid_at" => now(),
+                    "total_amount" => $data["stock"] * $data["price"],
+                ]);
+
+                TransactionItem::create([
+                    "transaction_id" => $transaction->id,
+                    "product_id" => $product->id,
+                    "quantity" => $data["stock"],
+                    "unit_price" => $data["price"],
+                    "line_price" => $data["stock"] * $data["price"],
+                ]);
+            }
+
+            return $product;
+        });
 
         return response()->json(
             [
