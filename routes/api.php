@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\Api\BillingController;
 
 Route::prefix('auth')->group(function (): void {
     Route::post('/login', [AuthController::class, 'login']);
@@ -34,3 +35,10 @@ Route::middleware('auth:sanctum')->prefix('transactions')->group(function () {
     Route::get('/{id}', [TransactionController::class, 'show']);  // detail
     Route::post('/', [TransactionController::class, 'store']);    // Simpan Transaksi Baru / Adjustment
 });
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/billing/subscribe', [BillingController::class, 'subscribe']);
+    Route::get('/billing/active', [BillingController::class, 'active']);
+});
+
+Route::post('/billing/webhook', [BillingController::class, 'webhook']);
