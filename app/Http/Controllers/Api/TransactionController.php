@@ -96,7 +96,7 @@ class TransactionController extends Controller
     // 1. Fungsi untuk melihat riwayat semua transaksi berdasarkan user yang login (History)
     public function index(Request $request)
     {
-        $transactions = Transaction::with(["items"])
+        $transactions = Transaction::with(["items.product.stocks"])
             ->where("user_id", $request->user()->id)
             ->get();
 
