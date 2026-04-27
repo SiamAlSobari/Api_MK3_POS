@@ -3,6 +3,9 @@
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\Api\BillingController;
 
 Route::prefix('auth')->group(function (): void {
     Route::post('/login', [AuthController::class, 'login']);
@@ -23,4 +26,19 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->apiResource('products', App\Http\Controllers\Api\ProductController::class);
+Route::middleware('auth:sanctum')->apiResource('categories', App\Http\Controllers\Api\CategoryController::class);
+Route::patch('categories/{id}/status', [CategoryController::class, 'updateStatus']);
+Route::patch('categories/products', [CategoryController::class, 'getCategoriesWithProducts']);
 
+Route::middleware('auth:sanctum')->prefix('transactions')->group(function () {
+    Route::get('/', [TransactionController::class, 'index']);     // list / history
+    Route::get('/{id}', [TransactionController::class, 'show']);  // detail
+    Route::post('/', [TransactionController::class, 'store']);    // Simpan Transaksi Baru / Adjustment
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/billing/subscribe', [BillingController::class, 'subscribe']);
+    Route::get('/billing/active', [BillingController::class, 'active']);
+});
+
+Route::post('/billing/webhook', [BillingController::class, 'webhook']);
