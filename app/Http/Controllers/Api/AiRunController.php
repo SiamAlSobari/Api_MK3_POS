@@ -9,6 +9,7 @@ use App\Models\AiRecommendationAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+
 class AiRunController extends Controller
 {
     /**
