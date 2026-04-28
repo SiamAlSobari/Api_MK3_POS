@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\BillingController;
+use App\Http\Controllers\Api\AiRunController;
 
 Route::prefix('auth')->group(function (): void {
     Route::post('/login', [AuthController::class, 'login']);
@@ -42,3 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::post('/billing/webhook', [BillingController::class, 'webhook']);
+
+Route::middleware('auth:sanctum')->prefix('ai')->group(function () {
+    Route::get('/runs/latest', [AiRunController::class, 'latest']);
+    Route::patch('/recommendations/{recommendationId}/action', [AiRunController::class, 'updateAction']);
+});
