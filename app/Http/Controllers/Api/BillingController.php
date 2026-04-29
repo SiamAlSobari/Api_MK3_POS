@@ -27,12 +27,10 @@ class BillingController extends Controller
     {
         $data = $request->validate([
             'plan_name' => 'required|string|in:PRO,PRO_MAX',
-            'payment_type' => 'nullable|string|in:GOPAY,QRIS,BCA,BNI',
         ]);
 
         $planName = strtoupper($data['plan_name']);
         $plan = self::$plans[$planName];
-        $paymentType = $data['payment_type'] ?? 'QRIS';
         $startDate = Carbon::today();
         $endDate = $startDate->copy()->addDays($plan['duration_days']);
 
@@ -46,43 +44,82 @@ class BillingController extends Controller
             'status' => 'PENDING',
         ]);
 
+        $orderId = Str::orderedUuid()->toString();
+
         $payment = Payment::create([
             'user_id' => $request->user()->id,
             'subscription_id' => $subscription->id,
-            'order_id' => Str::orderedUuid()->toString(),
+            'order_id' => $orderId,
             'gross_amount' => $plan['price'],
-            'payment_type' => $paymentType,
+            'payment_type' => 'MIDTRANS',
             'transaction_time' => null,
             'status' => 'PENDING',
         ]);
 
-        return response()->json([
-            'message' => 'Subscription created. Please complete payment.',
-            'subscription' => $subscription,
-            'payment' => $payment,
-        ], 201);
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+
+        $params = [
+            'transaction_details' => [
+                'order_id' => $orderId,
+                'gross_amount' => $plan['price'],
+            ],
+            'customer_details' => [
+                'first_name' => $request->user()->name,
+                'email' => $request->user()->email,
+            ],
+        ];
+
+        try {
+            $paymentUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
+            return response()->json([
+                'message' => 'Subscription created. Please complete payment.',
+                'subscription' => $subscription,
+                'payment' => $payment,
+                'payment_url' => $paymentUrl,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
     public function webhook(Request $request): JsonResponse
     {
-        $data = $request->validate([
-            'order_id' => 'required|string|exists:payments,order_id',
-            'status' => 'required|string|in:PENDING,SETTLEMENT,EXPIRED,CANCEL,DENY',
-            'transaction_time' => 'nullable|date',
-        ]);
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
 
-        $payment = Payment::where('order_id', $data['order_id'])->first();
+        try {
+            $notification = new \Midtrans\Notification();
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Invalid notification'], 400);
+        }
+
+        $payment = Payment::where('order_id', $notification->order_id)->first();
+        if (!$payment) {
+            return response()->json(['message' => 'Payment not found'], 404);
+        }
+
+        $status = 'PENDING';
+        if ($notification->transaction_status == 'settlement' || $notification->transaction_status == 'capture') {
+            $status = 'SETTLEMENT';
+        } elseif (in_array($notification->transaction_status, ['cancel', 'deny', 'expire'])) {
+            $status = strtoupper($notification->transaction_status);
+            if ($status === 'EXPIRE') $status = 'EXPIRED';
+        }
 
         $payment->update([
-            'status' => $data['status'],
-            'transaction_time' => $data['transaction_time'] ? Carbon::parse($data['transaction_time']) : now(),
+            'status' => $status,
+            'transaction_time' => $notification->transaction_time ? Carbon::parse($notification->transaction_time) : now(),
+            'payment_type' => $notification->payment_type,
         ]);
 
         $subscription = $payment->subscription;
 
-        if ($data['status'] === 'SETTLEMENT') {
+        if ($status === 'SETTLEMENT') {
             $subscription->update(['status' => 'ACTIVE']);
-        } elseif (in_array($data['status'], ['EXPIRED', 'CANCEL', 'DENY'], true)) {
+        } elseif (in_array($status, ['EXPIRED', 'CANCEL', 'DENY'], true)) {
             $subscription->update(['status' => 'PENDING']);
         }
 
@@ -93,17 +130,58 @@ class BillingController extends Controller
         ]);
     }
 
+    // TAMBAHAN: Webhook khusus untuk test di Postman
+    // public function webhookTest(Request $request): JsonResponse
+    // {
+    //     // Langsung ambil data dari body JSON Postman
+    //     $notification = (object) $request->all();
+
+    //     $payment = Payment::where('order_id', $notification->order_id)->first();
+    //     if (!$payment) {
+    //         return response()->json(['message' => 'Payment not found'], 404);
+    //     }
+
+    //     $status = 'PENDING';
+    //     if ($notification->transaction_status == 'settlement' || $notification->transaction_status == 'capture') {
+    //         $status = 'SETTLEMENT';
+    //     } elseif (in_array($notification->transaction_status, ['cancel', 'deny', 'expire'])) {
+    //         $status = strtoupper($notification->transaction_status);
+    //         if ($status === 'EXPIRE') $status = 'EXPIRED';
+    //     }
+
+    //     $payment->update([
+    //         'status' => $status,
+    //         'transaction_time' => isset($notification->transaction_time) ? Carbon::parse($notification->transaction_time) : now(),
+    //         'payment_type' => $notification->payment_type ?? 'POSTMAN_MOCK',
+    //     ]);
+
+    //     $subscription = $payment->subscription;
+
+    //     if ($status === 'SETTLEMENT') {
+    //         $subscription->update(['status' => 'ACTIVE']);
+    //     } elseif (in_array($status, ['EXPIRED', 'CANCEL', 'DENY'], true)) {
+    //         $subscription->update(['status' => 'PENDING']);
+    //     }
+
+    //     return response()->json([
+    //         'message' => 'Mock Webhook processed.',
+    //         'payment' => $payment,
+    //         'subscription' => $subscription,
+    //     ]);
+    // }
+
     public function active(Request $request): JsonResponse
     {
-        $activeSubscriptions = Subscription::with(['payments'])
+        $activeSubscription = Subscription::with(['payments'])
             ->where('user_id', $request->user()->id)
             ->where('status', 'ACTIVE')
             ->whereDate('end_date', '>=', Carbon::today())
-            ->get();
+            ->latest()
+            ->first();
 
         return response()->json([
             'message' => 'Active billing data retrieved successfully.',
-            'data' => $activeSubscriptions,
+            'data' => $activeSubscription,
         ]);
     }
 }
