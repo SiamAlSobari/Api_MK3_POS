@@ -144,4 +144,22 @@ class ReportController extends Controller
                 return null;
         }
     }
+    // Fungsi tambahan untuk mendapatkan riwayat transaksi penjualan (SALE) dengan pagination
+    public function salesHistory(Request $request): JsonResponse
+    {
+        $userId = $request->user()->id;
+
+        // 1. Filter hanya tipe 'SALE'
+        // 2. Gunakan paginate() untuk sistem halaman
+        $sales = Transaction::with(['items.product', 'user'])
+            ->where('user_id', $userId)
+            ->where('trx_type', 'SALE')
+            ->latest() // Urutkan dari yang terbaru
+            ->paginate(10); // Menampilkan 10 data per halaman
+
+        return response()->json([
+            'message' => 'Riwayat transaksi penjualan (SALE) berhasil diambil',
+            'data' => $sales,
+        ]);
+    }
 }
