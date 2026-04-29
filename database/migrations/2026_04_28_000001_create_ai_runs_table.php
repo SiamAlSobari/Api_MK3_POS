@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('ai_runs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->enum('status', ['PROCESSING', 'COMPLETED', 'FAILED'])->default('PROCESSING');
             $table->timestamp('generated_at')->nullable();
             $table->text('error_message')->nullable();

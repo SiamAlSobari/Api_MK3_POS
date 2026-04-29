@@ -12,6 +12,7 @@ class AiRun extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        "user_id",
         "status",
         "generated_at",
         "error_message",

@@ -42,7 +42,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/billing/active', [BillingController::class, 'active']);
 });
 
+// Webhook dipisah dari middleware auth karena dipanggil oleh server Midtrans (publik)
 Route::post('/billing/webhook', [BillingController::class, 'webhook']);
+
+// Endpoint khusus testing webhook via Postman
+Route::post('/billing/webhook-test', [BillingController::class, 'webhookTest']);
+
 
 Route::middleware('auth:sanctum')->prefix('ai')->group(function () {
     Route::get('/runs/latest', [AiRunController::class, 'latest']);
