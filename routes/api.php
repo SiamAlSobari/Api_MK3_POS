@@ -52,8 +52,13 @@ Route::post('/billing/webhook-test', [BillingController::class, 'webhookTest']);
 
 
 Route::middleware('auth:sanctum')->prefix('ai')->group(function () {
-    Route::get('/runs/latest', [AiRunController::class, 'latest']);
+    Route::get('/runs/latest/stocks', [AiRunController::class, 'latestStocks']);
+    Route::get('/runs/latest/busy-hours', [AiRunController::class, 'latestBusyHours']);
+    Route::post('/runs/analyze', [AiRunController::class, 'analyze']);
+    Route::post('/runs/analyze-busy-hours', [AiRunController::class, 'analyzeBusyHours']);
     Route::patch('/recommendations/{recommendationId}/action', [AiRunController::class, 'updateAction']);
+});
 
-Route::get('reports/sales-history', [ReportController::class, 'salesHistory']);
+Route::middleware('auth:sanctum')->prefix('reports')->group(function () {
+    Route::get('/sales-history', [ReportController::class, 'salesHistory']);
 });
