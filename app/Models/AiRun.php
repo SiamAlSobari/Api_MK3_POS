@@ -13,6 +13,7 @@ class AiRun extends Model
 
     protected $fillable = [
         "user_id",
+        "type_ai",
         "status",
         "generated_at",
         "error_message",
@@ -25,5 +26,10 @@ class AiRun extends Model
     public function aiRecommendations(): HasMany
     {
         return $this->hasMany(AiRecommendation::class, 'ai_run_id');
+    }
+
+    public function busyHourDailyForecasts(): HasMany
+    {
+        return $this->hasMany(BusyHourDailyForecast::class, 'ai_run_id');
     }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Relasi ke User
         $table->string('name');
-        $table->boolean('isActive')->default(true); // Field isActive
+        $table->boolean('is_active')->default(true); // Field is_active
         $table->timestamps();
     });
 }

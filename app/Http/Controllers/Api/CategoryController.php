@@ -44,6 +44,8 @@ class CategoryController extends Controller
             "description" => ["nullable", "string"],
         ]);
 
+        $data["user_id"] = $request->user()->id;
+
         $category = Category::create($data);
 
         return response()->json(
@@ -58,8 +60,12 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Category $category): JsonResponse
+    public function show(Request $request, Category $category): JsonResponse
     {
+        if ($category->user_id !== $request->user()->id) {
+            return response()->json(["message" => "Kategori tidak ditemukan"], 404);
+        }
+
         return response()->json([
             "message" => "Category retrieved successfully.",
             "data" => $category,
@@ -71,6 +77,10 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category): JsonResponse
     {
+        if ($category->user_id !== $request->user()->id) {
+            return response()->json(["message" => "Kategori tidak ditemukan"], 404);
+        }
+
         $data = $request->validate([
             "name" => ["string", "max:255"],
             "description" => ["nullable", "string"],
@@ -87,8 +97,12 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category): JsonResponse
+    public function destroy(Request $request, Category $category): JsonResponse
     {
+        if ($category->user_id !== $request->user()->id) {
+            return response()->json(["message" => "Kategori tidak ditemukan"], 404);
+        }
+
         $category->delete();
 
         return response()->json([
@@ -98,7 +112,7 @@ class CategoryController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $category = Category::find($id);
+        $category = Category::where('user_id', $request->user()->id)->find($id);
 
         if (!$category) {
             return response()->json(
@@ -107,8 +121,12 @@ class CategoryController extends Controller
             );
         }
 
+        $request->validate([
+            "isActive" => ["required", "boolean"],
+        ]);
+
         $category->update([
-            "isActive" => $request->isActive,
+            "is_active" => $request->isActive,
         ]);
 
         return response()->json([

@@ -143,13 +143,83 @@ class ProductController extends Controller
             "description" => ["nullable", "string"],
             "stock" => ["integer", "min:0"],
             "category_id" => ["nullable", "exists:categories,id"],
+            "image" => ["nullable", "image", "max:2048"],
         ]);
 
-        $product->update($data);
+        if ($request->hasFile("image")) {
+            try {
+                $file = $request->file("image");
+
+                $cloudName = env("CLOUDINARY_CLOUD_NAME");
+                $apiKey = env("CLOUDINARY_API_KEY");
+                $apiSecret = env("CLOUDINARY_API_SECRET");
+
+                $response = Http::asMultipart()
+                    ->withBasicAuth($apiKey, $apiSecret)
+                    ->post(
+                        "https://api.cloudinary.com/v1_1/{$cloudName}/image/upload",
+                        [
+                            "file" => fopen($file->getRealPath(), "r"),
+                            "folder" => "pos_products",
+                        ],
+                    );
+
+                if ($response->successful()) {
+                    $data["image_url"] = $response->json()["secure_url"];
+                } else {
+                    return response()->json(
+                        [
+                            "error" => "Upload Cloudinary Gagal",
+                            "detail" => $response->json(),
+                        ],
+                        500,
+                    );
+                }
+            } catch (\Exception $e) {
+                return response()->json(["error" => $e->getMessage()], 500);
+            }
+        }
+
+        DB::transaction(function () use ($data, $request, $product) {
+            $stockToAdd = $data["stock"] ?? 0;
+            
+            // Remove fields that should not be mass updated to product table directly if necessary
+            // e.g. stock, image (since image uses image_url)
+            unset($data["stock"]);
+            if (isset($data["image"])) unset($data["image"]);
+
+            $product->update($data);
+
+            if ($stockToAdd > 0) {
+                // Determine current price or updated price
+                $price = $data["price"] ?? $product->price;
+
+                $product->stocks()->create([
+                    "stock_on_hand" => $stockToAdd,
+                ]);
+
+                $transaction = Transaction::create([
+                    "user_id" => $request->user()->id,
+                    "trx_type" => "ADJUSTMENT",
+                    "trx_date" => now(),
+                    "payment_method" => "CASH",
+                    "paid_at" => now(),
+                    "total_amount" => $stockToAdd * $price,
+                ]);
+
+                TransactionItem::create([
+                    "transaction_id" => $transaction->id,
+                    "product_id" => $product->id,
+                    "quantity" => $stockToAdd,
+                    "unit_price" => $price,
+                    "line_price" => $stockToAdd * $price,
+                ]);
+            }
+        });
 
         return response()->json([
             "message" => "Product updated successfully.",
-            "data" => $product->fresh(),
+            "data" => $product->fresh(["category", "stocks"]),
         ]);
     }
 
