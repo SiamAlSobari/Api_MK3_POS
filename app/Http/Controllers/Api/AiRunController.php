@@ -16,11 +16,27 @@ use Illuminate\Support\Facades\Http;
 
 class AiRunController extends Controller
 {
+    private function checkProMax($user): bool
+    {
+        return \App\Models\Subscription::where('user_id', $user->id)
+            ->where('plan_name', 'PRO_MAX')
+            ->where('status', 'ACTIVE')
+            ->whereDate('end_date', '>=', \Carbon\Carbon::today())
+            ->exists();
+    }
+
     /**
      * Get latest AI run for STOCKS with recommendations and actions
      */
     public function latestStocks(Request $request): JsonResponse
     {
+        if (!$this->checkProMax($request->user())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This feature requires an active PRO_MAX subscription.',
+            ], 403);
+        }
+
         $aiRun = AiRun::where('user_id', $request->user()->id)
             ->where('type_ai', 'STOCKS')
             ->orderBy('created_at', 'desc')
@@ -53,6 +69,13 @@ class AiRunController extends Controller
      */
     public function latestBusyHours(Request $request): JsonResponse
     {
+        if (!$this->checkProMax($request->user())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This feature requires an active PRO_MAX subscription.',
+            ], 403);
+        }
+
         $aiRun = AiRun::where('user_id', $request->user()->id)
             ->where('type_ai', 'BUSY')
             ->orderBy('created_at', 'desc')
@@ -80,6 +103,13 @@ class AiRunController extends Controller
 
     public function analyze( Request $request): JsonResponse
     {
+        if (!$this->checkProMax($request->user())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This feature requires an active PRO_MAX subscription.',
+            ], 403);
+        }
+
         $AI_URL = env('AI_URL');
         $AI_API_TOKEN = env('AI_API_TOKEN');
         $transactions = Transaction::with(["items.product.stocks"])
@@ -161,6 +191,13 @@ class AiRunController extends Controller
 
     public function analyzeBusyHours(Request $request): JsonResponse
     {
+        if (!$this->checkProMax($request->user())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This feature requires an active PRO_MAX subscription.',
+            ], 403);
+        }
+
         $AI_URL = env('AI_URL');
         $AI_API_TOKEN = env('AI_API_TOKEN');
         $transactions = Transaction::with(["items.product.stocks"])
@@ -288,6 +325,13 @@ class AiRunController extends Controller
      */
     public function updateAction(Request $request, int $recommendationId): JsonResponse
     {
+        if (!$this->checkProMax($request->user())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This feature requires an active PRO_MAX subscription.',
+            ], 403);
+        }
+
         $request->validate([
             'action_type' => 'required|in:DONE,IGNORE',
         ]);
