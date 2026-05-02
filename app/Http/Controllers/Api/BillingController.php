@@ -14,11 +14,11 @@ class BillingController extends Controller
 {
     private static array $plans = [
         'PRO' => [
-            'price' => 12000,
+            'price' => 50000,
             'duration_days' => 30,
         ],
         'PRO_MAX' => [
-            'price' => 79000,
+            'price' => 390000,
             'duration_days' => 30,
         ],
     ];
