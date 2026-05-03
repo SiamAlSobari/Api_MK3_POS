@@ -81,7 +81,7 @@ class AiRunController extends Controller
             ->orderBy('created_at', 'desc')
             ->with([
                 'busyHourDailyForecasts.hourlyPredictions.productPredictions' => function ($query) {
-                    $query->whereHas('product');
+                    $query->whereHas('product')->with('product');
                 }
             ])
             ->first();
