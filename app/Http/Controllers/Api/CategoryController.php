@@ -121,12 +121,12 @@ class CategoryController extends Controller
             );
         }
 
-        $request->validate([
-            "isActive" => ["required", "boolean"],
+        $validated = $request->validate([
+            "is_active" => ["required", "boolean"],
         ]);
 
         $category->update([
-            "is_active" => $request->isActive,
+            "is_active" => $validated['is_active'],
         ]);
 
         return response()->json([

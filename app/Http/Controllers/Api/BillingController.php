@@ -18,7 +18,7 @@ class BillingController extends Controller
             'duration_days' => 30,
         ],
         'PRO_MAX' => [
-            'price' => 390000,
+            'price' => 39000,
             'duration_days' => 30,
         ],
     ];

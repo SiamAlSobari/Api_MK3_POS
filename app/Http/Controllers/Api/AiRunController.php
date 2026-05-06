@@ -275,15 +275,15 @@ class AiRunController extends Controller
                     'data' => [
                         'ai_run' => $aiRun,
                         'summary' => [
-                            'accuracy_percent' => $aiData['accuracy_percent'],
-                            'training_samples' => $aiData['training_samples'],
-                            'data_range' => $aiData['data_range'],
-                            'busiest_day' => $aiData['busiest_day'],
-                            'quietest_day' => $aiData['quietest_day'],
-                            'avg_daily_transactions' => $aiData['avg_daily_transactions'],
-                            'avg_daily_revenue' => $aiData['avg_daily_revenue'],
-                            'total_peak_hours' => $aiData['total_peak_hours'],
-                            'top_peak_hours' => $aiData['top_peak_hours'],
+                            'accuracy_percent' => $aiData['accuracy_percent'] ?? 0,
+                            'training_samples' => $aiData['training_samples'] ?? 0,
+                            'data_range' => $aiData['data_range'] ?? null,
+                            'busiest_day' => $aiData['busiest_day'] ?? null,
+                            'quietest_day' => $aiData['quietest_day'] ?? null,
+                            'avg_daily_transactions' => $aiData['avg_daily_transactions'] ?? 0,
+                            'avg_daily_revenue' => $aiData['avg_daily_revenue'] ?? 0,
+                            'total_peak_hours' => $aiData['total_peak_hours'] ?? 0,
+                            'top_peak_hours' => $aiData['top_peak_hours'] ?? [],
                         ]
                     ]
                 ]);
