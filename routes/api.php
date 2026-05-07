@@ -29,8 +29,8 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->apiResource('products', App\Http\Controllers\Api\ProductController::class);
 Route::middleware('auth:sanctum')->apiResource('categories', App\Http\Controllers\Api\CategoryController::class);
-Route::patch('categories/{id}/status', [CategoryController::class, 'updateStatus']);
-Route::patch('categories/products', [CategoryController::class, 'getCategoriesWithProducts']);
+Route::patch('categories/{id}/status', [CategoryController::class, 'updateStatus'])->middleware('auth:sanctum');
+Route::get('categories/products', [CategoryController::class, 'getCategoriesWithProducts'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->prefix('transactions')->group(function () {
     Route::get('/', [TransactionController::class, 'index']);     // list / history
