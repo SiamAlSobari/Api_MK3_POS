@@ -271,7 +271,144 @@ Memperbarui status tindakan pada suatu rekomendasi AI (misalnya, menandai rekome
 
 ---
 
-## 6. Riwayat Transaksi Penjualan (Sale History)
+## 6. Dapatkan Ringkasan Report Penjualan
+Mengambil semua ringkasan data report penjualan untuk periode `hari_ini`, `minggu_ini`, `bulan_ini`, `tahun_ini`, dan `sepanjang_masa`.
+
+- **URL**: `/api/reports`
+- **Method**: `GET`
+- **Middleware**: `auth:sanctum`
+
+**Request Headers:**
+```json
+{
+  "Authorization": "Bearer {token}"
+}
+```
+
+**Query Parameters:**
+- Tidak ada parameter wajib khusus.
+
+**Response: 200 OK (Berhasil)**
+```json
+{
+  "message": "Report data retrieved successfully.",
+  "data": {
+    "hari_ini": {
+      "total_pendapatan": 150000,
+      "pendapatan_vs_sebelumnya": {
+        "nilai_sebelumnya": 120000,
+        "persentase_perubahan": 25.0
+      },
+      "total_transaksi": 8,
+      "rata_rata_keranjang": 18750,
+      "tren_penjualan": {
+        "2026-05-12": 150000
+      },
+      "produk_terlaris": [
+        {
+          "name": "Produk A",
+          "total_quantity": 10
+        },
+        {
+          "name": "Produk B",
+          "total_quantity": 5
+        }
+      ],
+      "transaksi_terakhir": [
+        {
+          "id": 101,
+          "user_id": 10,
+          "trx_type": "SALE",
+          "total_amount": 50000,
+          "trx_date": "2026-05-12 14:00:00",
+          "items": [
+            {
+              "id": 1,
+              "transaction_id": 101,
+              "product_id": 5,
+              "quantity": 2,
+              "price": 25000,
+              "product": {
+                "id": 5,
+                "name": "Produk A"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "minggu_ini": {
+      "total_pendapatan": 750000,
+      "pendapatan_vs_sebelumnya": {
+        "nilai_sebelumnya": 680000,
+        "persentase_perubahan": 10.29
+      },
+      "total_transaksi": 35,
+      "rata_rata_keranjang": 21428.57,
+      "tren_penjualan": {
+        "2026-05-10": 180000,
+        "2026-05-11": 220000,
+        "2026-05-12": 350000
+      },
+      "produk_terlaris": [
+        {
+          "name": "Produk A",
+          "total_quantity": 42
+        }
+      ],
+      "transaksi_terakhir": []
+    },
+    "bulan_ini": {
+      "total_pendapatan": 2200000,
+      "pendapatan_vs_sebelumnya": {
+        "nilai_sebelumnya": 1900000,
+        "persentase_perubahan": 15.79
+      },
+      "total_transaksi": 95,
+      "rata_rata_keranjang": 23157.89,
+      "tren_penjualan": {
+        "2026-05-01": 125000,
+        "2026-05-02": 145000
+      },
+      "produk_terlaris": [],
+      "transaksi_terakhir": []
+    },
+    "tahun_ini": {
+      "total_pendapatan": 9800000,
+      "pendapatan_vs_sebelumnya": {
+        "nilai_sebelumnya": 9200000,
+        "persentase_perubahan": 6.52
+      },
+      "total_transaksi": 420,
+      "rata_rata_keranjang": 23333.33,
+      "tren_penjualan": {
+        "2026-04-30": 180000,
+        "2026-05-12": 150000
+      },
+      "produk_terlaris": [],
+      "transaksi_terakhir": []
+    },
+    "sepanjang_masa": {
+      "total_pendapatan": 35000000,
+      "pendapatan_vs_sebelumnya": {
+        "nilai_sebelumnya": 0,
+        "persentase_perubahan": 0.0
+      },
+      "total_transaksi": 1450,
+      "rata_rata_keranjang": 24137.93,
+      "tren_penjualan": {
+        "2025-12-01": 125000
+      },
+      "produk_terlaris": [],
+      "transaksi_terakhir": []
+    }
+  }
+}
+```
+
+---
+
+## 7. Riwayat Transaksi Penjualan (Sale History)
 Mendapatkan semua riwayat transaksi tipe penjualan (`SALE`) milik *user* menggunakan sistem halaman (Pagination Laravel).
 
 - **URL**: `/api/reports/sales-history`

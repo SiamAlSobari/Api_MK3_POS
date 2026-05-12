@@ -148,14 +148,21 @@ class ReportController extends Controller
     public function salesHistory(Request $request): JsonResponse
     {
         $userId = $request->user()->id;
+        $period = $request->query('period', 'semua');
+        $perPage = (int) $request->query('per_page', 10);
+        $perPage = $perPage > 0 ? min($perPage, 100) : 10;
 
-        // 1. Filter hanya tipe 'SALE'
-        // 2. Gunakan paginate() untuk sistem halaman
-        $sales = Transaction::with(['items.product', 'user'])
+        $salesQuery = Transaction::with(['items.product', 'user'])
             ->where('user_id', $userId)
-            ->where('trx_type', 'SALE')
-            ->latest() // Urutkan dari yang terbaru
-            ->paginate(10); // Menampilkan 10 data per halaman
+            ->where('trx_type', 'SALE');
+
+        if (in_array($period, ['hari_ini', 'today'], true)) {
+            $salesQuery->whereDate('trx_date', Carbon::today());
+        }
+
+        $sales = $salesQuery
+            ->latest('trx_date') // Urutkan dari yang terbaru
+            ->paginate($perPage); // Menampilkan data per halaman
 
         return response()->json([
             'message' => 'Riwayat transaksi penjualan (SALE) berhasil diambil',
