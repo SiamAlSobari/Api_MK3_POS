@@ -151,6 +151,7 @@ class ReportController extends Controller
         $period = $request->query('period', 'semua');
         $perPage = (int) $request->query('per_page', 10);
         $perPage = $perPage > 0 ? min($perPage, 100) : 10;
+        $search = $request->query('search', '');
 
         $salesQuery = Transaction::with(['items.product', 'user'])
             ->where('user_id', $userId)
@@ -158,6 +159,16 @@ class ReportController extends Controller
 
         if (in_array($period, ['hari_ini', 'today'], true)) {
             $salesQuery->whereDate('trx_date', Carbon::today());
+        }
+
+        if (!empty($search)) {
+            $salesQuery->where(function ($query) use ($search) {
+                $query->whereHas('items.product', function ($q) use ($search) {
+                    $q->where('name', 'LIKE', '%' . $search . '%');
+                })
+                ->orWhere('id', 'LIKE', '%' . $search . '%')
+                ->orWhere('total_amount', $search);
+            });
         }
 
         $sales = $salesQuery

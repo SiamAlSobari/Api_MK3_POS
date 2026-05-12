@@ -426,13 +426,18 @@ Mendapatkan semua riwayat transaksi tipe penjualan (`SALE`) milik *user* dengan 
 - `period`: Filter periode waktu transaksi:
   - `semua` (default) - Semua transaksi tanpa filter periode
   - `hari_ini` atau `today` - Hanya transaksi hari ini
+- `search`: Cari berdasarkan:
+  - Nama produk dalam transaksi
+  - ID transaksi
+  - Total amount (nilai transaksi)
 - `per_page`: Jumlah data per halaman (default: `10`, max: `100`)
 - `page`: Nomor halaman (default: `1`)
 
 **Contoh Request:**
 - `/api/reports/sales-history` - Semua transaksi, 10 per halaman
 - `/api/reports/sales-history?period=hari_ini` - Transaksi hari ini
-- `/api/reports/sales-history?period=semua&per_page=20&page=1` - Semua transaksi, 20 per halaman, halaman pertama
+- `/api/reports/sales-history?search=Produk` - Cari produk dengan nama "Produk"
+- `/api/reports/sales-history?period=semua&per_page=20&search=A&page=1` - Semua transaksi dengan pencarian, 20 per halaman
 
 **Response: 200 OK (Berhasil)**
 ```json
