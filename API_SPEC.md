@@ -409,7 +409,7 @@ Mengambil semua ringkasan data report penjualan untuk periode `hari_ini`, `mingg
 ---
 
 ## 7. Riwayat Transaksi Penjualan (Sale History)
-Mendapatkan semua riwayat transaksi tipe penjualan (`SALE`) milik *user* menggunakan sistem halaman (Pagination Laravel).
+Mendapatkan semua riwayat transaksi tipe penjualan (`SALE`) milik *user* dengan dukungan filter periode dan pagination.
 
 - **URL**: `/api/reports/sales-history`
 - **Method**: `GET`
@@ -422,8 +422,17 @@ Mendapatkan semua riwayat transaksi tipe penjualan (`SALE`) milik *user* menggun
 }
 ```
 
-**URL Parameters (Opsional bawaan Laravel Pagination):**
-- `page`: Nomor halaman (contoh: `?page=2`)
+**Query Parameters (Opsional):**
+- `period`: Filter periode waktu transaksi:
+  - `semua` (default) - Semua transaksi tanpa filter periode
+  - `hari_ini` atau `today` - Hanya transaksi hari ini
+- `per_page`: Jumlah data per halaman (default: `10`, max: `100`)
+- `page`: Nomor halaman (default: `1`)
+
+**Contoh Request:**
+- `/api/reports/sales-history` - Semua transaksi, 10 per halaman
+- `/api/reports/sales-history?period=hari_ini` - Transaksi hari ini
+- `/api/reports/sales-history?period=semua&per_page=20&page=1` - Semua transaksi, 20 per halaman, halaman pertama
 
 **Response: 200 OK (Berhasil)**
 ```json
@@ -437,8 +446,10 @@ Mendapatkan semua riwayat transaksi tipe penjualan (`SALE`) milik *user* menggun
         "user_id": 10,
         "trx_type": "SALE",
         "total_amount": 50000,
-        "trx_date": "2023-11-20 12:00:00",
-        "created_at": "2023-11-20T12:00:00.000000Z",
+        "trx_date": "2026-05-12 14:30:00",
+        "created_at": "2026-05-12T14:30:00.000000Z",
+        "updated_at": "2026-05-12T14:30:00.000000Z",
+        "deleted_at": null,
         "items": [
           {
             "id": 1,
@@ -453,8 +464,8 @@ Mendapatkan semua riwayat transaksi tipe penjualan (`SALE`) milik *user* menggun
           }
         ],
         "user": {
-           "id": 10,
-           "name": "User Kasir"
+          "id": 10,
+          "name": "User Kasir"
         }
       }
     ],
