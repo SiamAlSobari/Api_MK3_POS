@@ -54,8 +54,10 @@ Route::post('/billing/webhook-test', [BillingController::class, 'webhookTest']);
 Route::middleware('auth:sanctum')->prefix('ai')->group(function () {
     Route::get('/runs/latest/stocks', [AiRunController::class, 'latestStocks']);
     Route::get('/runs/latest/busy-hours', [AiRunController::class, 'latestBusyHours']);
+    Route::get('/runs/latest/portfolio', [AiRunController::class, 'latestPortfolio']);
     Route::post('/runs/analyze', [AiRunController::class, 'analyze']);
     Route::post('/runs/analyze-busy-hours', [AiRunController::class, 'analyzeBusyHours']);
+    Route::post('/runs/generate-portfolio', [AiRunController::class, 'generatePortfolio']);
     Route::patch('/recommendations/{recommendationId}/action', [AiRunController::class, 'updateAction']);
 });
 
