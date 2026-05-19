@@ -1,7 +1,7 @@
 # API Specification
 
 Berikut adalah Spesifikasi API untuk endpoints `/ai` dan `/reports`.
-Semua endpoint di bawah ini **membutuhkan autentikasi** berupa Bearer Token (`auth:sanctum`). Untuk endpoint `/ai`, pengguna juga diwajibkan memiliki subscription (langganan) **PRO_MAX** yang masih aktif.
+Semua endpoint di bawah ini **membutuhkan autentikasi** berupa Bearer Token (`auth:sanctum`). Untuk endpoint `/ai`, pengguna juga diwajibkan memiliki subscription (langganan) **PRO** yang masih aktif.
 
 ---
 
@@ -11,7 +11,7 @@ Mengambil riwayat data analisis *restock* barang terakhir (terbaru) dari AI untu
 - **URL**: `/api/ai/runs/latest/stocks`
 - **Method**: `GET`
 - **Middleware**: `auth:sanctum`
-- **Syarat**: Langganan `PRO_MAX`
+- **Syarat**: Langganan `PRO`
 
 **Request Headers:**
 ```json
@@ -56,11 +56,11 @@ Mengambil riwayat data analisis *restock* barang terakhir (terbaru) dari AI untu
 }
 ```
 
-**Response: 403 Forbidden (Bukan Pro Max)**
+**Response: 403 Forbidden (Bukan Pro)**
 ```json
 {
   "success": false,
-  "message": "This feature requires an active PRO_MAX subscription."
+  "message": "This feature requires an active PRO subscription."
 }
 ```
 
@@ -72,7 +72,7 @@ Mengambil hasil analisis prediksi jam sibuk dan prediksi *revenue* terakhir dari
 - **URL**: `/api/ai/runs/latest/busy-hours`
 - **Method**: `GET`
 - **Middleware**: `auth:sanctum`
-- **Syarat**: Langganan `PRO_MAX`
+- **Syarat**: Langganan `PRO`
 
 **Request Headers:**
 ```json
@@ -142,7 +142,7 @@ Memicu server AI eksternal untuk melakukan kalkulasi prediksi stok barang untuk 
 - **URL**: `/api/ai/runs/analyze`
 - **Method**: `POST`
 - **Middleware**: `auth:sanctum`
-- **Syarat**: Langganan `PRO_MAX`
+- **Syarat**: Langganan `PRO`
 
 **Request Headers:**
 ```json
@@ -189,7 +189,7 @@ Memicu server AI eksternal untuk melakukan kalkulasi prediksi jam sibuk dan omse
 - **URL**: `/api/ai/runs/analyze-busy-hours`
 - **Method**: `POST`
 - **Middleware**: `auth:sanctum`
-- **Syarat**: Langganan `PRO_MAX`
+- **Syarat**: Langganan `PRO`
 
 **Request Headers:**
 ```json
@@ -236,7 +236,7 @@ Memperbarui status tindakan pada suatu rekomendasi AI (misalnya, menandai rekome
 - **URL**: `/api/ai/recommendations/{recommendationId}/action`
 - **Method**: `PATCH`
 - **Middleware**: `auth:sanctum`
-- **Syarat**: Langganan `PRO_MAX`
+- **Syarat**: Langganan `PRO`
 
 **Request Headers:**
 ```json

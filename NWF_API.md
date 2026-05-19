@@ -3,7 +3,7 @@
 Dokumentasi ini berisi spesifikasi API untuk fitur AI terkait manajemen Stok Barang. API ini dikhususkan untuk menampilkan prediksi stok terakhir dan mengubah status / aksi rekomendasi yang diberikan oleh AI.
 
 **Catatan Penting:** 
-Semua endpoint dalam dokumen ini membutuhkan *Authorization Bearer Token* dari pengguna yang telah berlangganan (subscription) dengan paket **`PRO_MAX`** dan statusnya **`ACTIVE`**. Jika tidak, akan mengembalikan respons `403 Forbidden`.
+Semua endpoint dalam dokumen ini membutuhkan *Authorization Bearer Token* dari pengguna yang telah berlangganan (subscription) dengan paket **`PRO`** dan statusnya **`ACTIVE`**. Jika tidak, akan mengembalikan respons `403 Forbidden`.
 
 ---
 
@@ -84,11 +84,11 @@ Mengambil hasil analisis (run) AI terbaru khusus untuk prediksi **STOCKS** milik
 
 ### Response Error
 
-**403 Forbidden (Tidak Punya Akses PRO_MAX)**
+**403 Forbidden (Tidak Punya Akses PRO)**
 ```json
 {
     "success": false,
-    "message": "This feature requires an active PRO_MAX subscription."
+    "message": "This feature requires an active PRO subscription."
 }
 ```
 

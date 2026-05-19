@@ -19,8 +19,15 @@ class BusyHourDailyForecast extends Model
         'day_of_week',
         'is_weekend',
         'total_predicted_trx',
+        'est_trx_min',
+        'est_trx_max',
+        'est_trx_label',
         'total_predicted_revenue',
+        'est_revenue_min',
+        'est_revenue_max',
+        'est_revenue_label',
         'peak_hour',
+        'peak_hour_label',
         'peak_hour_trx',
         'busy_hours_count',
     ];
@@ -31,6 +38,8 @@ class BusyHourDailyForecast extends Model
         'total_predicted_trx' => 'decimal:2',
         'total_predicted_revenue' => 'decimal:2',
         'peak_hour_trx' => 'decimal:2',
+        'est_revenue_min' => 'decimal:2',
+        'est_revenue_max' => 'decimal:2',
     ];
 
     public function aiRun(): BelongsTo

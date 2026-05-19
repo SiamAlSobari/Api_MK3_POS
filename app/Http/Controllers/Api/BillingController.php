@@ -14,11 +14,7 @@ class BillingController extends Controller
 {
     private static array $plans = [
         'PRO' => [
-            'price' => 50000,
-            'duration_days' => 30,
-        ],
-        'PRO_MAX' => [
-            'price' => 39000,
+            'price' => 29000,
             'duration_days' => 30,
         ],
     ];
@@ -26,7 +22,7 @@ class BillingController extends Controller
     public function subscribe(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'plan_name' => 'required|string|in:PRO,PRO_MAX',
+            'plan_name' => 'required|string|in:PRO',
         ]);
 
         $planName = strtoupper($data['plan_name']);
@@ -106,7 +102,8 @@ class BillingController extends Controller
             $status = 'SETTLEMENT';
         } elseif (in_array($notification->transaction_status, ['cancel', 'deny', 'expire'])) {
             $status = strtoupper($notification->transaction_status);
-            if ($status === 'EXPIRE') $status = 'EXPIRED';
+            if ($status === 'EXPIRE')
+                $status = 'EXPIRED';
         }
 
         $payment->update([

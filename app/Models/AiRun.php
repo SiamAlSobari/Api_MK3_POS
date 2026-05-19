@@ -17,10 +17,13 @@ class AiRun extends Model
         "status",
         "generated_at",
         "error_message",
+        "seasonal_insight",
+        "total_products",
     ];
 
     protected $casts = [
         "generated_at" => "datetime",
+        "seasonal_insight" => "array",
     ];
 
     public function aiRecommendations(): HasMany
@@ -31,5 +34,10 @@ class AiRun extends Model
     public function busyHourDailyForecasts(): HasMany
     {
         return $this->hasMany(BusyHourDailyForecast::class, 'ai_run_id');
+    }
+
+    public function portfolioInsight(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(AiPortfolioInsight::class, 'ai_run_id');
     }
 }
