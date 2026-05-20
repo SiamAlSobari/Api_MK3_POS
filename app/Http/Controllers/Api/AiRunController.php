@@ -118,7 +118,45 @@ class AiRunController extends Controller
         ]);
     }
 
-    // TODO: Teman kamu nanti akan mengerjakan bagian latestPortfolio berdasarkan instruksi di AI_INSIGHT.md
+    /**
+     * Get latest AI run for PORTFOLIO with insights
+     */
+    public function latestPortfolio(Request $request): JsonResponse
+    {
+        if (!$this->checkPro($request->user())) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" =>
+                        "This feature requires an active PRO subscription.",
+                ],
+                403,
+            );
+        }
+
+        $aiRun = AiRun::where("user_id", $request->user()->id)
+            ->where("type_ai", "PORTFOLIO")
+            ->orderBy("created_at", "desc")
+            ->with("portfolioInsight")
+            ->first();
+
+        if (!$aiRun) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "No AI run found for PORTFOLIO insights",
+                    "data" => null,
+                ],
+                404,
+            );
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Latest AI PORTFOLIO run retrieved successfully",
+            "data" => $aiRun,
+        ]);
+    }
 
     public function analyze(Request $request): JsonResponse
     {
@@ -421,7 +459,117 @@ class AiRunController extends Controller
         }
     }
 
-    // TODO: Teman kamu nanti akan mengerjakan bagian generatePortfolio berdasarkan instruksi di AI_INSIGHT.md
+    /**
+     * Generate AI portfolio insights from transaction data
+     */
+    public function generatePortfolio(Request $request): JsonResponse
+    {
+        if (!$this->checkPro($request->user())) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" =>
+                        "This feature requires an active PRO subscription.",
+                ],
+                403,
+            );
+        }
+
+        $AI_URL = env("AI_URL");
+        $AI_API_TOKEN = env("AI_API_TOKEN");
+        $transactions = Transaction::with(["items.product"])
+            ->where("user_id", $request->user()->id)
+            ->get();
+
+        try {
+            // Hit external AI API
+            $response = Http::withToken($AI_API_TOKEN)->post(
+                $AI_URL . "/insights/generate",
+                [
+                    "data" => $transactions,
+                ],
+            );
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+                $aiData = $responseData["data"];
+                $summary = $aiData["summary"] ?? [];
+
+                // Create AiRun instance
+                $aiRun = AiRun::create([
+                    "user_id" => $request->user()->id,
+                    "type_ai" => "PORTFOLIO",
+                    "status" => "COMPLETED",
+                    "generated_at" => now(),
+                ]);
+
+                // Create AiPortfolioInsight
+                AiPortfolioInsight::create([
+                    "ai_run_id" => $aiRun->id,
+                    "user_id" => $request->user()->id,
+                    "insight" => $aiData["insight"] ?? null,
+                    "tanggal_laporan" => $summary["tanggal_laporan"] ?? null,
+                    "periode" => $summary["periode"] ?? null,
+                    "total_omset_minggu_ini" => $summary["total_omset_minggu_ini"] ?? 0,
+                    "total_transaksi" => $summary["total_transaksi"] ?? 0,
+                    "rata_rata_transaksi_per_hari" => $summary["rata_rata_transaksi_per_hari"] ?? 0,
+                    "rata_rata_omset_per_hari" => $summary["rata_rata_omset_per_hari"] ?? 0,
+                    "bintang_warung" => $summary["bintang_warung"] ?? null,
+                    "hari_ramai_tanggal" => $summary["hari_paling_ramai"]["tanggal"] ?? null,
+                    "hari_ramai_omset" => $summary["hari_paling_ramai"]["omset"] ?? null,
+                    "produk_kurang_laku" => $summary["produk_kurang_laku"] ?? null,
+                    "source" => $aiData["source"] ?? null,
+                    "generated_at" => $aiData["generated_at"] ?? now(),
+                    "valid_until" => $aiData["valid_until"] ?? null,
+                ]);
+
+                // Load relationships for response
+                $aiRun->load("portfolioInsight");
+
+                return response()->json([
+                    "success" => true,
+                    "message" => "Weekly portfolio generated successfully",
+                    "data" => $aiRun,
+                ]);
+            }
+
+            // Failed response from API
+            AiRun::create([
+                "user_id" => $request->user()->id,
+                "type_ai" => "PORTFOLIO",
+                "status" => "FAILED",
+                "generated_at" => now(),
+                "error_message" => $response->body(),
+            ]);
+
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Failed to generate weekly portfolio",
+                ],
+                $response->status(),
+            );
+        } catch (\Exception $e) {
+            // Error connecting to API or inserting to DB
+            AiRun::create([
+                "user_id" => $request->user()->id,
+                "type_ai" => "PORTFOLIO",
+                "status" => "FAILED",
+                "generated_at" => now(),
+                "error_message" => $e->getMessage(),
+            ]);
+
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" =>
+                        "An error occurred during portfolio generation: " .
+                        $e->getMessage(),
+                ],
+                500,
+            );
+        }
+    }
 
     /**
      * Update action for AI recommendation
