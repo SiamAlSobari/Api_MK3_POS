@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\AiRunController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\ProfileController;
 
 Route::prefix('auth')->group(function (): void {
     Route::post('/login', [AuthController::class, 'login']);
@@ -42,6 +43,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/billing/subscribe', [BillingController::class, 'subscribe']);
     Route::get('/billing/active', [BillingController::class, 'active']);
     Route::get('/reports', [ReportController::class, 'index']);
+
+    // Profile Routes
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::post('/profile', [ProfileController::class, 'store']);
+    Route::match(['put', 'patch'], '/profile', [ProfileController::class, 'update']);
+    Route::delete('/profile', [ProfileController::class, 'destroy']);
 });
 
 // Webhook dipisah dari middleware auth karena dipanggil oleh server Midtrans (publik)

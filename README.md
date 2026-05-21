@@ -1,58 +1,61 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MK3 POS API (Point of Sale)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a robust, Laravel-based RESTful API for a modern Point of Sale (POS) system. It provides core POS capabilities, including inventory management, secure transaction processing, comprehensive sales reporting, and advanced AI-driven features for business forecasting.
 
-## About Laravel
+## Key Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Authentication & Authorization**: Secure API endpoints utilizing Laravel Sanctum. Includes role-based access control and Subscription management (Free vs. PRO tiers).
+- **Inventory & Stock Management**: Keep track of product stocks, manage store items, and monitor low inventory.
+- **Transactions & Sales**: Process and record sales transactions, maintaining a detailed sales history.
+- **Comprehensive Reporting**: Access rich sales reports, revenue trends, average basket sizes, and best-selling products across various timeframes (daily, weekly, monthly, yearly).
+- **Payment Gateway Integration**: Built-in support for Midtrans to process payments efficiently.
+- **AI-Powered Analytics (PRO Feature)**:
+  - **Smart Restock Prediction**: AI evaluates historical data to recommend optimal restock quantities, risk levels, and estimated stock-out dates.
+  - **Busy Hours Forecasting**: AI models predict store peak hours and daily revenue, allowing for optimized staff scheduling and inventory preparation.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Technology Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Framework**: Laravel (PHP 8.3)
+- **Authentication**: Laravel Sanctum
+- **Payment Gateway**: Midtrans PHP
+- **Database**: Eloquent ORM (MySQL / PostgreSQL / SQLite)
+- **AI Integration**: Communicates with an external AI server for predictive modeling.
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Getting Started
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Follow these instructions to set up the project locally:
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+1. **Clone the repository** to your local machine.
 
-## Agentic Development
+2. **Install PHP and Node.js dependencies**:
+   ```bash
+   composer install
+   npm install
+   ```
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+3. **Set up environment variables**:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-```bash
-composer require laravel/boost --dev
+4. **Database Configuration**:
+   Update your `.env` file with your database credentials, then run the migrations:
+   ```bash
+   php artisan migrate
+   ```
 
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. **Run the Development Server**:
+   You can start the local development environment using the following command (which spins up Vite, the Laravel server, and queue worker):
+   ```bash
+   composer run dev
+   ```
+   Alternatively, start them separately:
+   ```bash
+   php artisan serve
+   ```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
