@@ -260,7 +260,7 @@ class ReportController extends Controller
 
         $salesQuery = Transaction::with(["items.product", "user"])
             ->where("user_id", $userId)
-            ->where("trx_type", "SALE");
+            ->whereIn("trx_type", ["SALE", "PURCHASE"]);
 
         if (in_array($period, ["hari_ini", "today"], true)) {
             $salesQuery->whereDate("trx_date", Carbon::today());

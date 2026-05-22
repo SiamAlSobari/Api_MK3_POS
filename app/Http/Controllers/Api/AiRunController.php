@@ -208,6 +208,7 @@ class AiRunController extends Controller
                 // Store each recommendation into the database
                 foreach ($responseData["data"] as $item) {
                     $restockRec = $item["restock_recommendation"] ?? [];
+                    $seasonalRestock = $item["seasonal_restock"] ?? [];
 
                     AiRecommendation::create([
                         "ai_run_id" => $aiRun->id,
@@ -234,6 +235,13 @@ class AiRunController extends Controller
                         "description" => $item["urgency_description"] ?? null,
                         "risk_point" => $item["risk_point"] ?? 0,
                         "stock_timeline" => $item["stock_timeline"] ?? null,
+                        // Seasonal fields
+                        "seasonal_min" => $seasonalRestock["min"] ?? null,
+                        "seasonal_max" => $seasonalRestock["max"] ?? null,
+                        "seasonal_label" => $seasonalRestock["label"] ?? null,
+                        "seasonal_holiday" =>
+                            $seasonalRestock["holiday"] ?? null,
+                        "seasonal_reason" => $seasonalRestock["reason"] ?? null,
                     ]);
                 }
 
@@ -510,14 +518,20 @@ class AiRunController extends Controller
                     "insight" => $aiData["insight"] ?? null,
                     "tanggal_laporan" => $summary["tanggal_laporan"] ?? null,
                     "periode" => $summary["periode"] ?? null,
-                    "total_omset_minggu_ini" => $summary["total_omset_minggu_ini"] ?? 0,
+                    "total_omset_minggu_ini" =>
+                        $summary["total_omset_minggu_ini"] ?? 0,
                     "total_transaksi" => $summary["total_transaksi"] ?? 0,
-                    "rata_rata_transaksi_per_hari" => $summary["rata_rata_transaksi_per_hari"] ?? 0,
-                    "rata_rata_omset_per_hari" => $summary["rata_rata_omset_per_hari"] ?? 0,
+                    "rata_rata_transaksi_per_hari" =>
+                        $summary["rata_rata_transaksi_per_hari"] ?? 0,
+                    "rata_rata_omset_per_hari" =>
+                        $summary["rata_rata_omset_per_hari"] ?? 0,
                     "bintang_warung" => $summary["bintang_warung"] ?? null,
-                    "hari_ramai_tanggal" => $summary["hari_paling_ramai"]["tanggal"] ?? null,
-                    "hari_ramai_omset" => $summary["hari_paling_ramai"]["omset"] ?? null,
-                    "produk_kurang_laku" => $summary["produk_kurang_laku"] ?? null,
+                    "hari_ramai_tanggal" =>
+                        $summary["hari_paling_ramai"]["tanggal"] ?? null,
+                    "hari_ramai_omset" =>
+                        $summary["hari_paling_ramai"]["omset"] ?? null,
+                    "produk_kurang_laku" =>
+                        $summary["produk_kurang_laku"] ?? null,
                     "source" => $aiData["source"] ?? null,
                     "generated_at" => $aiData["generated_at"] ?? now(),
                     "valid_until" => $aiData["valid_until"] ?? null,
