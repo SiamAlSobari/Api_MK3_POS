@@ -23,7 +23,9 @@ return new class extends Migration
         // 1. ai_runs: Tambah enum PORTFOLIO, seasonal_insight, total_products
         // =====================================================================
         // Ubah enum type_ai: STOCKS, BUSY, PORTFOLIO
-        DB::statement("ALTER TABLE ai_runs MODIFY COLUMN type_ai ENUM('STOCKS','BUSY','PORTFOLIO') DEFAULT 'STOCKS'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE ai_runs MODIFY COLUMN type_ai ENUM('STOCKS','BUSY','PORTFOLIO') DEFAULT 'STOCKS'");
+        }
 
         Schema::table('ai_runs', function (Blueprint $table) {
             $table->json('seasonal_insight')->nullable()->after('error_message');
@@ -169,6 +171,8 @@ return new class extends Migration
             $table->dropColumn(['seasonal_insight', 'total_products']);
         });
 
-        DB::statement("ALTER TABLE ai_runs MODIFY COLUMN type_ai ENUM('STOCKS','BUSY') DEFAULT 'STOCKS'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE ai_runs MODIFY COLUMN type_ai ENUM('STOCKS','BUSY') DEFAULT 'STOCKS'");
+        }
     }
 };

@@ -41,6 +41,14 @@ class AiRecommendation extends Model
         "stock_timeline" => "array",
     ];
 
+    protected $appends = [
+        'seasonal_min',
+        'seasonal_max',
+        'seasonal_label',
+        'seasonal_holiday',
+        'seasonal_reason',
+    ];
+
     public function aiRun(): BelongsTo
     {
         return $this->belongsTo(AiRun::class, 'ai_run_id');
@@ -54,5 +62,35 @@ class AiRecommendation extends Model
     public function aiRecommendationActions(): HasMany
     {
         return $this->hasMany(AiRecommendationAction::class, 'ai_recommendation_id');
+    }
+
+    public function seasonalRecommendation(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(AiSeasonalRecommendation::class, 'ai_recommendation_id');
+    }
+
+    public function getSeasonalMinAttribute()
+    {
+        return $this->seasonalRecommendation?->min;
+    }
+
+    public function getSeasonalMaxAttribute()
+    {
+        return $this->seasonalRecommendation?->max;
+    }
+
+    public function getSeasonalLabelAttribute()
+    {
+        return $this->seasonalRecommendation?->label;
+    }
+
+    public function getSeasonalHolidayAttribute()
+    {
+        return $this->seasonalRecommendation?->holiday;
+    }
+
+    public function getSeasonalReasonAttribute()
+    {
+        return $this->seasonalRecommendation?->reason;
     }
 }
