@@ -27,24 +27,34 @@ class ProfileController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        $profile = $request->user()->profile()->firstOrCreate([], [
-            'image_url' => 'https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fwww.magnific.com%2Ffree-photos-vectors%2Fplaceholder&ved=0CBcQjRxqFwoTCPDg1uKyyZQDFQAAAAAdAAAAABA8&opi=89978449',
-        ]);
+        $profile = $request
+            ->user()
+            ->profile()
+            ->firstOrCreate(
+                [],
+                [
+                    "image_url" =>
+                        "https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fwww.magnific.com%2Ffree-photos-vectors%2Fplaceholder&ved=0CBcQjRxqFwoTCPDg1uKyyZQDFQAAAAAdAAAAABA8&opi=89978449",
+                ],
+            );
 
         $profileData = $profile->toArray();
-        $profileData['ai_portfolio'] = null;
+        $profileData["ai_portfolio"] = null;
 
         if ($this->checkPro($request->user())) {
-            $profileData['ai_portfolio'] = \App\Models\AiRun::where('user_id', $request->user()->id)
-                ->where('type_ai', 'PORTFOLIO')
-                ->orderBy('created_at', 'desc')
-                ->with('portfolioInsight')
+            $profileData["ai_portfolio"] = \App\Models\AiRun::where(
+                "user_id",
+                $request->user()->id,
+            )
+                ->where("type_ai", "PORTFOLIO")
+                ->orderBy("created_at", "desc")
+                ->with("portfolioInsight")
                 ->first();
         }
 
         return response()->json([
-            'message' => 'Profile retrieved successfully.',
-            'data' => $profileData,
+            "message" => "Profile retrieved successfully.",
+            "data" => $profileData,
         ]);
     }
 
@@ -54,62 +64,76 @@ class ProfileController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'bio' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'max:2048'],
+            "bio" => ["nullable", "string"],
+            "image" => ["nullable", "image"],
         ]);
 
         // If profile already exists, return it, otherwise create
         $profile = $request->user()->profile;
 
         if ($profile) {
-            return response()->json([
-                'message' => 'Profile already exists. Use PUT/PATCH to update.',
-                'data' => $profile,
-            ], 409);
+            return response()->json(
+                [
+                    "message" =>
+                        "Profile already exists. Use PUT/PATCH to update.",
+                    "data" => $profile,
+                ],
+                409,
+            );
         }
 
-        $image_url = 'https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fwww.magnific.com%2Ffree-photos-vectors%2Fplaceholder&ved=0CBcQjRxqFwoTCPDg1uKyyZQDFQAAAAAdAAAAABA8&opi=89978449';
+        $image_url =
+            "https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fwww.magnific.com%2Ffree-photos-vectors%2Fplaceholder&ved=0CBcQjRxqFwoTCPDg1uKyyZQDFQAAAAAdAAAAABA8&opi=89978449";
 
-        if ($request->hasFile('image')) {
+        if ($request->hasFile("image")) {
             try {
-                $file = $request->file('image');
+                $file = $request->file("image");
 
-                $cloudName = env('CLOUDINARY_CLOUD_NAME');
-                $apiKey = env('CLOUDINARY_API_KEY');
-                $apiSecret = env('CLOUDINARY_API_SECRET');
+                $cloudName = env("CLOUDINARY_CLOUD_NAME");
+                $apiKey = env("CLOUDINARY_API_KEY");
+                $apiSecret = env("CLOUDINARY_API_SECRET");
 
                 $response = Http::asMultipart()
                     ->withBasicAuth($apiKey, $apiSecret)
                     ->post(
                         "https://api.cloudinary.com/v1_1/{$cloudName}/image/upload",
                         [
-                            'file' => fopen($file->getRealPath(), 'r'),
-                            'folder' => 'pos_profiles',
+                            "file" => fopen($file->getRealPath(), "r"),
+                            "folder" => "pos_profiles",
                         ],
                     );
 
                 if ($response->successful()) {
-                    $image_url = $response->json()['secure_url'];
+                    $image_url = $response->json()["secure_url"];
                 } else {
-                    return response()->json([
-                        'error' => 'Upload Cloudinary Gagal',
-                        'detail' => $response->json(),
-                    ], 500);
+                    return response()->json(
+                        [
+                            "error" => "Upload Cloudinary Gagal",
+                            "detail" => $response->json(),
+                        ],
+                        500,
+                    );
                 }
             } catch (\Exception $e) {
-                return response()->json(['error' => $e->getMessage()], 500);
+                return response()->json(["error" => $e->getMessage()], 500);
             }
         }
 
-        $profile = $request->user()->profile()->create([
-            'bio' => $data['bio'] ?? null,
-            'image_url' => $image_url,
-        ]);
+        $profile = $request
+            ->user()
+            ->profile()
+            ->create([
+                "bio" => $data["bio"] ?? null,
+                "image_url" => $image_url,
+            ]);
 
-        return response()->json([
-            'message' => 'Profile created successfully.',
-            'data' => $profile,
-        ], 201);
+        return response()->json(
+            [
+                "message" => "Profile created successfully.",
+                "data" => $profile,
+            ],
+            201,
+        );
     }
 
     /**
@@ -118,55 +142,65 @@ class ProfileController extends Controller
     public function update(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'bio' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'max:2048'],
+            "bio" => ["nullable", "string"],
+            "image" => ["nullable", "image"],
         ]);
 
-        $profile = $request->user()->profile()->firstOrCreate([], [
-            'image_url' => 'https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fwww.magnific.com%2Ffree-photos-vectors%2Fplaceholder&ved=0CBcQjRxqFwoTCPDg1uKyyZQDFQAAAAAdAAAAABA8&opi=89978449',
-        ]);
+        $profile = $request
+            ->user()
+            ->profile()
+            ->firstOrCreate(
+                [],
+                [
+                    "image_url" =>
+                        "https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fwww.magnific.com%2Ffree-photos-vectors%2Fplaceholder&ved=0CBcQjRxqFwoTCPDg1uKyyZQDFQAAAAAdAAAAABA8&opi=89978449",
+                ],
+            );
 
         $updateData = [];
-        if (array_key_exists('bio', $data)) {
-            $updateData['bio'] = $data['bio'];
+        if (array_key_exists("bio", $data)) {
+            $updateData["bio"] = $data["bio"];
         }
 
-        if ($request->hasFile('image')) {
+        if ($request->hasFile("image")) {
             try {
-                $file = $request->file('image');
+                $file = $request->file("image");
 
-                $cloudName = env('CLOUDINARY_CLOUD_NAME');
-                $apiKey = env('CLOUDINARY_API_KEY');
-                $apiSecret = env('CLOUDINARY_API_SECRET');
+                $cloudName = env("CLOUDINARY_CLOUD_NAME");
+                $apiKey = env("CLOUDINARY_API_KEY");
+                $apiSecret = env("CLOUDINARY_API_SECRET");
 
                 $response = Http::asMultipart()
                     ->withBasicAuth($apiKey, $apiSecret)
                     ->post(
                         "https://api.cloudinary.com/v1_1/{$cloudName}/image/upload",
                         [
-                            'file' => fopen($file->getRealPath(), 'r'),
-                            'folder' => 'pos_profiles',
+                            "file" => fopen($file->getRealPath(), "r"),
+                            "folder" => "pos_profiles",
                         ],
                     );
 
                 if ($response->successful()) {
-                    $updateData['image_url'] = $response->json()['secure_url'];
+                    $updateData["image_url"] = $response->json()["secure_url"];
                 } else {
-                    return response()->json([
-                        'error' => 'Upload Cloudinary Gagal',
-                        'detail' => $response->json(),
-                    ], 500);
+                    return response()->json(
+                        [
+                            "error" => "Upload Cloudinary Gagal",
+                            "detail" => $response->json(),
+                        ],
+                        500,
+                    );
                 }
             } catch (\Exception $e) {
-                return response()->json(['error' => $e->getMessage()], 500);
+                return response()->json(["error" => $e->getMessage()], 500);
             }
         }
 
         $profile->update($updateData);
 
         return response()->json([
-            'message' => 'Profile updated successfully.',
-            'data' => $profile->fresh(),
+            "message" => "Profile updated successfully.",
+            "data" => $profile->fresh(),
         ]);
     }
 
@@ -182,7 +216,7 @@ class ProfileController extends Controller
         }
 
         return response()->json([
-            'message' => 'Profile deleted / reset successfully.',
+            "message" => "Profile deleted / reset successfully.",
         ]);
     }
 }

@@ -110,7 +110,7 @@ class ReportController extends Controller
 
         // Tren Penjualan (sum per hari dalam periode)
         $salesTrend = Transaction::selectRaw(
-            "DATE(trx_date) as date, SUM(total_amount) as total",
+            "trx_date as date, SUM(total_amount) as total",
         )
             ->where("user_id", $userId)
             ->where("trx_type", "SALE")

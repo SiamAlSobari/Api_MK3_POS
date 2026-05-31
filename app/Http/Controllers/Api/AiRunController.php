@@ -47,10 +47,11 @@ class AiRunController extends Controller
             ->orderBy("created_at", "desc")
             ->with([
                 "aiRecommendations" => function ($query) {
-                    $query->whereHas("product");
+                    $query->whereHas("product")->orderBy("risk_point", "desc");
                 },
                 "aiRecommendations.product",
                 "aiRecommendations.aiRecommendationActions",
+                "aiRecommendations.seasonalRecommendation",
             ])
             ->first();
 
@@ -179,15 +180,15 @@ class AiRunController extends Controller
 
         try {
             // Hit external AI API
-            $response = \Illuminate\Support\Facades\Http::withToken(
-                $AI_API_TOKEN,
-            )->post(
-                $AI_URL . "/predict/restock/summary?include_seasonal=true",
-                [
-                    "data" => $transactions,
-                    "forecast_days" => 14,
-                ],
-            );
+            $response = \Illuminate\Support\Facades\Http::timeout(300)
+                ->withToken($AI_API_TOKEN)
+                ->post(
+                    $AI_URL . "/predict/restock/summary?include_seasonal=true",
+                    [
+                        "data" => $transactions,
+                        "forecast_days" => 14,
+                    ],
+                );
 
             if ($response->successful()) {
                 $responseData = $response->json();
@@ -210,7 +211,7 @@ class AiRunController extends Controller
                     $restockRec = $item["restock_recommendation"] ?? [];
                     $seasonalRestock = $item["seasonal_restock"] ?? [];
 
-                    AiRecommendation::create([
+                    $recommendation = AiRecommendation::create([
                         "ai_run_id" => $aiRun->id,
                         "product_id" => $item["product_id"],
                         "product_name" => $item["product_name"] ?? null,
@@ -235,20 +236,26 @@ class AiRunController extends Controller
                         "description" => $item["urgency_description"] ?? null,
                         "risk_point" => $item["risk_point"] ?? 0,
                         "stock_timeline" => $item["stock_timeline"] ?? null,
-                        // Seasonal fields
-                        "seasonal_min" => $seasonalRestock["min"] ?? null,
-                        "seasonal_max" => $seasonalRestock["max"] ?? null,
-                        "seasonal_label" => $seasonalRestock["label"] ?? null,
-                        "seasonal_holiday" =>
-                            $seasonalRestock["holiday"] ?? null,
-                        "seasonal_reason" => $seasonalRestock["reason"] ?? null,
                     ]);
+
+                    if (!empty($seasonalRestock)) {
+                        $recommendation->seasonalRecommendation()->create([
+                            "min" => $seasonalRestock["min"] ?? null,
+                            "max" => $seasonalRestock["max"] ?? null,
+                            "label" => $seasonalRestock["label"] ?? null,
+                            "holiday" => $seasonalRestock["holiday"] ?? null,
+                            "reason" => $seasonalRestock["reason"] ?? null,
+                        ]);
+                    }
                 }
 
                 return response()->json([
                     "success" => true,
                     "message" => "AI run started successfully",
-                    "data" => $aiRun->load("aiRecommendations"),
+                    "data" => $aiRun->load([
+                        "aiRecommendations",
+                        "aiRecommendations.seasonalRecommendation",
+                    ]),
                 ]);
             }
 
@@ -311,13 +318,12 @@ class AiRunController extends Controller
 
         try {
             // Hit external AI API
-            $response = Http::withToken($AI_API_TOKEN)->post(
-                $AI_URL . "/predict/busy-hours",
-                [
+            $response = Http::timeout(300)
+                ->withToken($AI_API_TOKEN)
+                ->post($AI_URL . "/predict/busy-hours", [
                     "data" => $transactions,
                     "forecast_days" => 14,
-                ],
-            );
+                ]);
 
             if ($response->successful()) {
                 $responseData = $response->json();
@@ -491,12 +497,11 @@ class AiRunController extends Controller
 
         try {
             // Hit external AI API
-            $response = Http::withToken($AI_API_TOKEN)->post(
-                $AI_URL . "/insights/generate",
-                [
+            $response = Http::timeout(300)
+                ->withToken($AI_API_TOKEN)
+                ->post($AI_URL . "/insights/generate", [
                     "data" => $transactions,
-                ],
-            );
+                ]);
 
             if ($response->successful()) {
                 $responseData = $response->json();
