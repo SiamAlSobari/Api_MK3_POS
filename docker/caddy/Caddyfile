@@ -1,0 +1,23 @@
+:80 {
+    root * /var/www/public
+    file_server
+
+    # Gzip and Zstandard compression
+    encode gzip zstd
+
+    # Route request to PHP-FPM using FastCGI
+    php_fastcgi app:9000
+
+    # Security headers
+    header {
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "no-referrer-when-downgrade"
+    }
+
+    # Enable logging
+    log {
+        output file /var/log/caddy/access.log
+    }
+}

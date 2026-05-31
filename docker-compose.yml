@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  # Laravel App Container (PHP-FPM)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pos_app
+    restart: unless-stopped
+    working_dir: /var/www
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      # PostgreSQL (NeonDB) configurations
+      - DB_CONNECTION=pgsql
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_SSLMODE=${DB_SSLMODE:-require} # NeonDB requires SSL connection
+      - APP_KEY=${APP_KEY}
+      - APP_URL=${APP_URL}
+      - SESSION_DRIVER=database
+      - CACHE_STORE=database
+      - QUEUE_CONNECTION=database
+    volumes:
+      - storage-data:/var/www/storage
+      - public-data:/var/www/public
+    # Constrain resources to prevent crashing the 1GB RAM VPS
+    deploy:
+      resources:
+        limits:
+          memory: 450M
+
+  # Web Server Container (Caddy)
+  web:
+    image: caddy:alpine
+    container_name: pos_caddy
+    restart: unless-stopped
+    ports:
+      # Format: "PORT_VPS:PORT_CONTAINER"
+      # Ganti "80" di sebelah kiri jika ingin menggunakan port lain di VPS (contoh: "8080:80")
+      - "80:80"
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - public-data:/var/www/public:ro
+      - storage-data:/var/www/storage:ro
+    depends_on:
+      - app
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+
+  # Optional Background Queue Worker
+  # Uncomment this section if you need to run Laravel queue jobs
+  # queue-worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: pos_queue
+  #   restart: unless-stopped
+  #   working_dir: /var/www
+  #   command: php artisan queue:work --verbose --tries=3 --timeout=90
+  #   environment:
+  #     - APP_ENV=production
+  #     - APP_DEBUG=false
+  #     - DB_CONNECTION=pgsql
+  #     - DB_HOST=${DB_HOST}
+  #     - DB_PORT=${DB_PORT:-5432}
+  #     - DB_DATABASE=${DB_DATABASE}
+  #     - DB_USERNAME=${DB_USERNAME}
+  #     - DB_PASSWORD=${DB_PASSWORD}
+  #     - DB_SSLMODE=${DB_SSLMODE:-require}
+  #     - APP_KEY=${APP_KEY}
+  #     - SESSION_DRIVER=database
+  #     - CACHE_STORE=database
+  #     - QUEUE_CONNECTION=database
+  #   volumes:
+  #     - storage-data:/var/www/storage
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 150M
+
+  # Optional Task Scheduler
+  # Uncomment this section to run Laravel scheduled tasks automatically
+  # scheduler:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: pos_scheduler
+  #   restart: unless-stopped
+  #   working_dir: /var/www
+  #   command: php artisan schedule:work
+  #   environment:
+  #     - APP_ENV=production
+  #     - APP_DEBUG=false
+  #     - DB_CONNECTION=pgsql
+  #     - DB_HOST=${DB_HOST}
+  #     - DB_PORT=${DB_PORT:-5432}
+  #     - DB_DATABASE=${DB_DATABASE}
+  #     - DB_USERNAME=${DB_USERNAME}
+  #     - DB_PASSWORD=${DB_PASSWORD}
+  #     - DB_SSLMODE=${DB_SSLMODE:-require}
+  #     - APP_KEY=${APP_KEY}
+  #     - SESSION_DRIVER=database
+  #     - CACHE_STORE=database
+  #     - QUEUE_CONNECTION=database
+  #   volumes:
+  #     - storage-data:/var/www/storage
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 150M
+
+volumes:
+  storage-data:
+  public-data:

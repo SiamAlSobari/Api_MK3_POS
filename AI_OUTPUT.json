@@ -8,18 +8,19 @@
             "product_price": "15000.00",
             "current_stock": 2,
             "days_until_empty": 1,
-            "estimated_empty_date": "2026-05-21",
+            "estimated_empty_date": "2026-05-26",
             "urgency_level": "CRITICAL",
-            "urgency_description": "⚠️ DARURAT! Stok diperkirakan habis dalam 1 hari (sekitar tanggal 2026-05-21). Disarankan segera restock.",
+            "urgency_description": "⚠️ DARURAT! Stok diperkirakan habis dalam 1 hari (sekitar tanggal 2026-05-26). Disarankan segera restock.",
             "risk": "CRITICAL",
             "risk_point": 3,
             "restock_recommendation": {
-                "min": 16,
-                "max": 24,
-                "label": "Saran restock: 16 - 24 item untuk persediaan 7 hari ke depan."
+                "min": 10,
+                "max": 16,
+                "label": "Saran restock: 10 - 16 item untuk persediaan 7 hari ke depan."
             },
             "seasonal_restock": null,
-            "avg_daily_sales": 3.4
+            "avg_daily_sales": 3.4,
+            "accuracy_pct": 0
         },
         {
             "product_id": 2,
@@ -27,18 +28,19 @@
             "product_price": "3000.00",
             "current_stock": 8,
             "days_until_empty": 1,
-            "estimated_empty_date": "2026-05-21",
+            "estimated_empty_date": "2026-05-26",
             "urgency_level": "CRITICAL",
-            "urgency_description": "⚠️ DARURAT! Stok diperkirakan habis dalam 1 hari (sekitar tanggal 2026-05-21). Disarankan segera restock.",
+            "urgency_description": "⚠️ DARURAT! Stok diperkirakan habis dalam 1 hari (sekitar tanggal 2026-05-26). Disarankan segera restock.",
             "risk": "CRITICAL",
             "risk_point": 3,
             "restock_recommendation": {
-                "min": 52,
-                "max": 78,
-                "label": "Saran restock: 52 - 78 item untuk persediaan 7 hari ke depan."
+                "min": 60,
+                "max": 90,
+                "label": "Saran restock: 60 - 90 item untuk persediaan 7 hari ke depan."
             },
             "seasonal_restock": null,
-            "avg_daily_sales": 10.2
+            "avg_daily_sales": 10.2,
+            "accuracy_pct": 0
         },
         {
             "product_id": 3,
@@ -46,18 +48,19 @@
             "product_price": "3500.00",
             "current_stock": 20,
             "days_until_empty": 3,
-            "estimated_empty_date": "2026-05-23",
+            "estimated_empty_date": "2026-05-28",
             "urgency_level": "MEDIUM",
-            "urgency_description": "⚡ PERHATIAN! Stok diestimasi akan habis dalam 3 hari (sekitar tanggal 2026-05-23). Pertimbangkan untuk restock.",
+            "urgency_description": "⚡ PERHATIAN! Stok diestimasi akan habis dalam 3 hari (sekitar tanggal 2026-05-28). Pertimbangkan untuk restock.",
             "risk": "MEDIUM",
             "risk_point": 2,
             "restock_recommendation": {
-                "min": 23,
-                "max": 35,
-                "label": "Saran restock: 23 - 35 item untuk persediaan 7 hari ke depan."
+                "min": 24,
+                "max": 36,
+                "label": "Saran restock: 24 - 36 item untuk persediaan 7 hari ke depan."
             },
             "seasonal_restock": null,
-            "avg_daily_sales": 6.9
+            "avg_daily_sales": 6.9,
+            "accuracy_pct": 0
         },
         {
             "product_id": 6,
@@ -65,24 +68,25 @@
             "product_price": "14000.00",
             "current_stock": 14,
             "days_until_empty": 4,
-            "estimated_empty_date": "2026-05-24",
+            "estimated_empty_date": "2026-05-29",
             "urgency_level": "MEDIUM",
-            "urgency_description": "⚡ PERHATIAN! Stok diestimasi akan habis dalam 4 hari (sekitar tanggal 2026-05-24). Pertimbangkan untuk restock.",
+            "urgency_description": "⚡ PERHATIAN! Stok diestimasi akan habis dalam 4 hari (sekitar tanggal 2026-05-29). Pertimbangkan untuk restock.",
             "risk": "MEDIUM",
             "risk_point": 2,
             "restock_recommendation": {
-                "min": 11,
-                "max": 17,
-                "label": "Saran restock: 11 - 17 item untuk persediaan 7 hari ke depan."
+                "min": 14,
+                "max": 22,
+                "label": "Saran restock: 14 - 22 item untuk persediaan 7 hari ke depan."
             },
             "seasonal_restock": {
-                "min": 15,
-                "max": 25,
-                "label": "Restock musiman 15 - 25 item untuk Eid al-Adha (estimated), Vesak Day (estimated).",
+                "min": 21,
+                "max": 33,
+                "label": "Restock musiman 21 - 33 item untuk Eid al-Adha (estimated), Vesak Day (estimated).",
                 "holiday": "Eid al-Adha (estimated), Vesak Day (estimated)",
-                "reason": "Idul Adha seringkali meningkatkan kebutuhan bumbu masak dan perlengkapan terkait memasak, termasuk gula."
+                "reason": "Idul Adha seringkali melibatkan persiapan makanan yang membutuhkan gula dalam jumlah lebih banyak. Restock normal min 14, max 22. Kenaikan 1.5x = 21-33."
             },
-            "avg_daily_sales": 4.2
+            "avg_daily_sales": 4.2,
+            "accuracy_pct": 0
         },
         {
             "product_id": 4,
@@ -101,13 +105,14 @@
                 "label": "Stok diperkirakan masih cukup, belum perlu restock saat ini."
             },
             "seasonal_restock": {
-                "min": 15,
-                "max": 25,
-                "label": "Restock musiman 15 - 25 item untuk Eid al-Adha (estimated), Vesak Day (estimated).",
+                "min": 1,
+                "max": 3,
+                "label": "Restock musiman 1 - 3 item untuk Eid al-Adha (estimated), Vesak Day (estimated).",
                 "holiday": "Eid al-Adha (estimated), Vesak Day (estimated)",
-                "reason": "Idul Adha adalah hari raya besar yang biasanya meningkatkan konsumsi beras sebagai makanan pokok."
+                "reason": "Idul Adha seringkali melibatkan persiapan makanan yang membutuhkan beras dalam jumlah lebih banyak. Restock normal min 0, max 0. Kenaikan 1.5x. Dibulatkan ke atas untuk min, dibulatkan ke bawah untuk max."
             },
-            "avg_daily_sales": 1.1
+            "avg_daily_sales": 1.1,
+            "accuracy_pct": 0
         },
         {
             "product_id": 5,
@@ -126,13 +131,14 @@
                 "label": "Stok diperkirakan masih cukup, belum perlu restock saat ini."
             },
             "seasonal_restock": {
-                "min": 30,
-                "max": 45,
-                "label": "Restock musiman 30 - 45 item untuk Eid al-Adha (estimated), Vesak Day (estimated).",
+                "min": 4,
+                "max": 8,
+                "label": "Restock musiman 4 - 8 item untuk Eid al-Adha (estimated), Vesak Day (estimated).",
                 "holiday": "Eid al-Adha (estimated), Vesak Day (estimated)",
-                "reason": "Idul Adha seringkali melibatkan kegiatan memasak dalam jumlah besar, yang meningkatkan permintaan minyak goreng."
+                "reason": "Idul Adha seringkali melibatkan persiapan makanan yang membutuhkan minyak goreng dalam jumlah lebih banyak. Restock normal min 0, max 0. Kenaikan 1.5x. Dibulatkan ke atas untuk min, dibulatkan ke bawah untuk max."
             },
-            "avg_daily_sales": 2.8
+            "avg_daily_sales": 2.8,
+            "accuracy_pct": 0
         }
     ],
     "seasonal_insight": {
@@ -141,17 +147,17 @@
             {
                 "date": "2026-05-27",
                 "name": "Eid al-Adha (estimated)",
-                "days_away": 6,
+                "days_away": 1,
                 "impact": "HIGH"
             },
             {
                 "date": "2026-05-31",
                 "name": "Vesak Day (estimated)",
-                "days_away": 10,
+                "days_away": 5,
                 "impact": "HIGH"
             }
         ],
-        "seasonal_advice": "Wah, insting Mas/Mbak benar banget! Eid al-Adha sebentar lagi, jadi memang penjualannya bisa naik 2-3x lipat. Stok mi instan, sabun cuci piring, gula, dan air mineral sebaiknya ditambah 2x lipat dari saran AI, ya.",
+        "seasonal_advice": "Wah, ternyata Idul Adha sudah dekat nih! Insting Bapak/Ibu benar banget, penjualan pasti bakal naik. Untuk Idul Adha, stok mi instan, air mineral, dan gula pasir sebaiknya ditambah 2x lipat dari saran normal ya.",
         "source": "gemini-lite"
     }
 }
