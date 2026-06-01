@@ -43,10 +43,13 @@ services:
       # Format: "PORT_VPS:PORT_CONTAINER"
       # Ganti "80" di sebelah kiri jika ingin menggunakan port lain di VPS (contoh: "8080:80")
       - "80:80"
+      - "443:443"
     volumes:
       - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - public-data:/var/www/public:ro
       - storage-data:/var/www/storage:ro
+      - caddy-data:/data
+      - caddy-config:/config
     depends_on:
       - app
     deploy:
@@ -119,3 +122,5 @@ services:
 volumes:
   storage-data:
   public-data:
+  caddy-data:
+  caddy-config:
