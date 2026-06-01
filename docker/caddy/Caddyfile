@@ -21,3 +21,7 @@ paskelompok2.online, www.paskelompok2.online {
         output file /var/log/caddy/access.log
     }
 }
+
+ai.paskelompok2.online {
+    reverse_proxy host.docker.internal:8080
+}

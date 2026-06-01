@@ -52,6 +52,8 @@ services:
       - caddy-config:/config
     depends_on:
       - app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     deploy:
       resources:
         limits:
