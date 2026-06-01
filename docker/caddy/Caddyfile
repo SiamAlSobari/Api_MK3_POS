@@ -1,4 +1,4 @@
-:80 {
+paskelompok2.online, www.paskelompok2.online {
     root * /var/www/public
     file_server
 
