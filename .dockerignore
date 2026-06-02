@@ -12,6 +12,9 @@ docker-compose.yml
 .env.example
 tests/
 tests_profile.php
+test_profile.php
+*.bat
+.antigravitycli
 phpunit.xml
 README.md
 *.md
