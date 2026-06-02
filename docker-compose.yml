@@ -9,6 +9,8 @@ services:
     container_name: pos_app
     restart: unless-stopped
     working_dir: /var/www
+    env_file:
+      - .env
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
@@ -69,6 +71,8 @@ services:
   #   restart: unless-stopped
   #   working_dir: /var/www
   #   command: php artisan queue:work --verbose --tries=3 --timeout=90
+  #   env_file:
+  #     - .env
   #   environment:
   #     - APP_ENV=production
   #     - APP_DEBUG=false
@@ -100,6 +104,8 @@ services:
   #   restart: unless-stopped
   #   working_dir: /var/www
   #   command: php artisan schedule:work
+  #   env_file:
+  #     - .env
   #   environment:
   #     - APP_ENV=production
   #     - APP_DEBUG=false

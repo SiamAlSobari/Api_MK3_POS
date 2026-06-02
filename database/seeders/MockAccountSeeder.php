@@ -223,10 +223,10 @@ class MockAccountSeeder extends Seeder
 
         $this->command->info("Created {$totalProducts} products with stocks!");
 
-        // 6. GENERATE REALISTIC HIGH-VOLUME TRANSACTION HISTORY (LAST 90 DAYS)
-        $this->command->info("Generating high-volume transaction history over the last 90 days...");
+        // 6. GENERATE REALISTIC TRANSACTION HISTORY (LAST 30 DAYS)
+        $this->command->info("Generating realistic transaction history over the last 30 days...");
         
-        $startDate = Carbon::now()->subDays(90);
+        $startDate = Carbon::now()->subDays(30);
         $endDate = Carbon::now();
         
         // Disable Eloquent model events & database query logs to maximize seeding performance
@@ -247,7 +247,7 @@ class MockAccountSeeder extends Seeder
                 $isWeekend = $currentDate->isWeekend();
                 
                 // Determine number of transactions for the day (higher on weekends)
-                $numTransactions = $isWeekend ? rand(35, 60) : rand(15, 30);
+                $numTransactions = $isWeekend ? rand(5, 10) : rand(2, 5);
                 
                 for ($t = 0; $t < $numTransactions; $t++) {
                     // Generate time according to realistic business peaks (lunch: 11-13, dinner: 17-20)
