@@ -186,7 +186,7 @@ class AiRunController extends Controller
                     $AI_URL . "/predict/restock/summary?include_seasonal=true",
                     [
                         "data" => $transactions,
-                        "forecast_days" => 14,
+                        "forecast_days" => 5,
                     ],
                 );
 
@@ -322,7 +322,7 @@ class AiRunController extends Controller
                 ->withToken($AI_API_TOKEN)
                 ->post($AI_URL . "/predict/busy-hours", [
                     "data" => $transactions,
-                    "forecast_days" => 14,
+                    "forecast_days" => 4,
                 ]);
 
             if ($response->successful()) {
