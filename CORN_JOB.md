@@ -301,7 +301,39 @@ Langkah terakhir adalah menambahkan satu entri cron di server Anda (misalnya, me
 * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-- Ganti `/path-to-your-project` dengan path absolut ke direktori root proyek Laravel Anda (misalnya, `C:/laragon/www/pos`).
-- Perintah ini akan berjalan setiap menit untuk memeriksa apakah ada tugas yang perlu dieksekusi.
+- Ganti `/path-to-your-project` dengan path absolut ke direktori root proyek Laravel Anda (misalnya, `/var/www/pos` atau `C:/laragon/www/pos`).
+- Perintah ini akan berjalan setiap menit untuk memeriksa apakah ada scheduler yang harus didispatch.
 
-Dengan mengikuti langkah-langkah ini, sistem Anda akan secara otomatis menjalankan analisis AI untuk pengguna PRO sesuai jadwal yang telah ditentukan.
+## Langkah 5: Jalankan Queue Worker (Sangat Penting)
+
+Karena proses analisis AI di atas sekarang dijalankan secara **asinkron (asynchronous)** menggunakan Queue Jobs untuk mencegah timeout dan memori habis (OOM), Anda **wajib** menjalankan worker queue agar tugas-tugas tersebut diproses:
+
+### Di Lingkungan Development (Lokal)
+Jalan perintah berikut di terminal Anda:
+```bash
+php artisan queue:work --tries=1
+```
+*(Catatan: Jika Anda menggunakan perintah `npm run dev`, queue worker `php artisan queue:listen` sudah berjalan otomatis).*
+
+### Di Lingkungan Production (Server Linux)
+Sangat direkomendasikan untuk menggunakan **Supervisor** guna menjaga proses queue worker tetap berjalan terus-menerus di background. Contoh konfigurasi file Supervisor (`/etc/supervisor/conf.d/laravel-worker.conf`):
+
+```ini
+[program:laravel-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/pos/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs=2
+redirect_stderr=true
+stdout_logfile=/var/www/pos/storage/logs/worker.log
+stopwaitsecs=3600
+```
+
+Dengan konfigurasi ini:
+1. Cron job hanya bertugas memasukkan (dispatch) tugas analisis ke dalam antrean database dalam hitungan milidetik.
+2. Queue worker akan memproses satu per satu tugas analisis AI di background secara asinkron tanpa mengganggu stabilitas scheduler utama.
+
