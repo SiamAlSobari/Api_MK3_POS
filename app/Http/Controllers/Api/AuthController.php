@@ -42,10 +42,34 @@ class AuthController extends Controller
     {
         DB::transaction(function () use ($user) {
             $initialData = [
-                ['category' => 'Kebutuhan Rumah Tangga', 'product' => 'Sabun cuci piring', 'price' => 15000, 'stock' => 12],
-                ['category' => 'Makanan', 'product' => 'Mi instant', 'price' => 3000, 'stock' => 40], // 1 dus mi instan
-                ['category' => 'Minuman', 'product' => 'Air mineral 600ml', 'price' => 3500, 'stock' => 24], // 1 dus air mineral
-                ['category' => 'Sembako', 'product' => 'Beras 5 kg', 'price' => 70000, 'stock' => 5], // Cukup 5 karung
+                [
+                    'category' => 'Makanan',
+                    'product' => 'Mie goreng aceh',
+                    'price' => 3500,
+                    'stock' => 40,
+                    'image_url' => 'https://img.lazcdn.com/g/ff/kf/Seacb142468aa4280ae9cacb76d09eba5j.jpg_720x720q80.jpg'
+                ],
+                [
+                    'category' => 'Kebutuhan Rumah Tangga',
+                    'product' => 'Rinso',
+                    'price' => 5500,
+                    'stock' => 12,
+                    'image_url' => 'https://filebroker-cdn.lazada.co.id/kf/S28abc871c92847f2ada9a633b5a9102dJ.jpg'
+                ],
+                [
+                    'category' => 'Sembako',
+                    'product' => 'Gas melon 3kg',
+                    'price' => 20000,
+                    'stock' => 5,
+                    'image_url' => 'https://transisienergi.id/wp-content/uploads/2025/02/20250202_GAS-3-KG-LANGKA.jpg'
+                ],
+                [
+                    'category' => 'Minuman',
+                    'product' => 'Le mineral 600Ml',
+                    'price' => 3000,
+                    'stock' => 24,
+                    'image_url' => 'https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/2e98aacc45d146bcaf873103352ca1d6~tplv-aphluv4xwc-white-pad-v1:500:500.jpeg'
+                ],
             ];
 
             // 1. Buat Transaksi Induk
@@ -61,11 +85,12 @@ class AuthController extends Controller
             $totalAmount = 0;
 
             foreach ($initialData as $data) {
-                // 2. Buat Kategori
-                $category = Category::create([
+                // 2. Buat Kategori (menggunakan firstOrCreate agar jika kategori sama tidak duplikat)
+                $category = Category::firstOrCreate([
                     'name' => $data['category'],
-                    'isActive' => true,
                     'user_id' => $user->id,
+                ], [
+                    'isActive' => true,
                 ]);
 
                 // 3. Buat Produk 
@@ -73,7 +98,7 @@ class AuthController extends Controller
                     'name' => $data['product'],
                     'price' => $data['price'],
                     'description' => $data['product'] . ' adalah produk contoh.',
-                    'image_url' => 'https://placehold.co/400x400?text=' . urlencode($data['product']),
+                    'image_url' => $data['image_url'],
                     'category_id' => $category->id,
                     'is_active' => true,
                     'user_id' => $user->id,
@@ -82,6 +107,7 @@ class AuthController extends Controller
                 // 4. Tambah Stok
                 $stokAwal = $data['stock'];
                 $product->stocks()->create([
+                    'product_id' => $product->id,
                     'stock_on_hand' => $stokAwal,
                 ]);
 
