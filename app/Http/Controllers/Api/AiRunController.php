@@ -66,6 +66,23 @@ class AiRunController extends Controller
             );
         }
 
+        $aiRun->aiRecommendations->each(function ($rec) {
+            $rec->makeHidden([
+                "product_price",
+                "avg_daily_sales",
+                "target_days_coverage",
+                "stock_timeline",
+                "created_at",
+                "updated_at",
+                "deleted_at",
+                "seasonal_min",
+                "seasonal_max",
+                "seasonal_label",
+                "seasonal_holiday",
+                "seasonal_reason",
+            ]);
+        });
+
         return response()->json([
             "success" => true,
             "message" => "Latest AI STOCKS run retrieved successfully",

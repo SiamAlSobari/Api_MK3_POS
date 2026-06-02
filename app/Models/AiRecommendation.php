@@ -35,7 +35,7 @@ class AiRecommendation extends Model
     ];
 
     protected $casts = [
-        "estimated_emty_date" => "date",
+        "estimated_emty_date" => "date:Y-m-d",
         "product_price" => "decimal:2",
         "avg_daily_sales" => "decimal:2",
         "stock_timeline" => "array",

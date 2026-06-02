@@ -1,165 +1,200 @@
-# AI Stock API Documentation
+# AI STOCKS API
 
-## Base URL
+## GET `/api/ai/runs/latest/stocks`
 
-```
-/api/ai
-```
-
-> **Auth**: Semua endpoint memerlukan `Bearer Token` via Laravel Sanctum.
-> **Subscription**: Memerlukan subscription PRO aktif.
+Mengambil AI run terbaru untuk STOCKS milik user yang login.
 
 ---
 
-## 1. Latest Stocks
+### Headers
 
-Mengambil data AI run terbaru untuk analisis stok (STOCKS), termasuk rekomendasi restock per produk, seasonal restock, dan aksi user.
-
-### Request
-
-```
-GET /api/ai/runs/latest/stocks
-```
-
-**Headers:**
-
-| Header          | Value              |
-| --------------- | ------------------ |
-| `Authorization` | `Bearer {token}`   |
-| `Accept`        | `application/json` |
-
-**Body:** Tidak ada
+| Header | Value | Required |
+|--------|-------|----------|
+| `Authorization` | `Bearer {sanctum_token}` | Yes |
+| `Accept` | `application/json` | Yes |
 
 ---
 
-### Response
-
-#### ✅ 200 OK — Berhasil
+### Response: Success (200)
 
 ```json
 {
     "success": true,
     "message": "Latest AI STOCKS run retrieved successfully",
     "data": {
-        "id": 1,
-        "user_id": 1,
+        "id": 3,
+        "user_id": 2,
         "type_ai": "STOCKS",
         "status": "COMPLETED",
-        "generated_at": "2026-05-26T06:30:00.000000Z",
+        "generated_at": "2026-06-02T11:38:01.000000Z",
         "error_message": null,
         "seasonal_insight": {
-            "has_upcoming_holiday": true,
-            "upcoming_holidays": [
-                {
-                    "date": "2026-05-27",
-                    "name": "Eid al-Adha (estimated)",
-                    "days_away": 1,
-                    "impact": "HIGH"
-                },
-                {
-                    "date": "2026-05-31",
-                    "name": "Vesak Day (estimated)",
-                    "days_away": 5,
-                    "impact": "HIGH"
-                }
-            ],
-            "seasonal_advice": "Wah, ternyata Idul Adha sudah dekat nih! ...",
-            "source": "gemini-lite"
+            "has_upcoming_holiday": false,
+            "upcoming_holidays": [],
+            "seasonal_advice": "Tidak ada hari raya besar dalam 14 hari ke depan. Gunakan rekomendasi restock normal dari AI.",
+            "source": "system"
         },
-        "total_products": 6,
-        "created_at": "2026-05-26T06:30:00.000000Z",
-        "updated_at": "2026-05-26T06:30:00.000000Z",
+        "total_products": 4,
+        "created_at": "2026-06-02T11:38:01.000000Z",
+        "updated_at": "2026-06-02T11:38:01.000000Z",
         "deleted_at": null,
         "ai_recommendations": [
             {
-                "id": 1,
-                "ai_run_id": 1,
-                "product_id": 1,
-                "product_name": "Sabun cuci piring",
-                "product_price": "15000.00",
-                "current_stock": 2,
-                "avg_daily_sales": "3.40",
-                "recommed_restok_qty": 16,
-                "restock_min": 10,
-                "restock_max": 16,
-                "restock_label": "Saran restock: 10 - 16 item untuk persediaan 7 hari ke depan.",
-                "target_days_coverage": null,
+                "id": 51,
+                "ai_run_id": 3,
+                "product_id": 53,
+                "current_stock": 1,
+                "recommed_restok_qty": 32,
                 "risk_level": "CRITICAL",
-                "urgency_description": "⚠️ DARURAT! Stok diperkirakan habis dalam 1 hari (sekitar tanggal 2026-05-26). Disarankan segera restock.",
                 "days_until_emty": 1,
-                "estimated_emty_date": "2026-05-26",
+                "estimated_emty_date": "2026-06-02",
                 "risk": "CRITICAL",
-                "description": "⚠️ DARURAT! Stok diperkirakan habis dalam 1 hari ...",
+                "description": "⚠️ DARURAT! Stok diperkirakan habis dalam 1 hari (sekitar tanggal 2026-06-02). Disarankan segera restock.",
                 "risk_point": 3,
-                "stock_timeline": null,
-                "seasonal_min": null,
-                "seasonal_max": null,
-                "seasonal_label": null,
-                "seasonal_holiday": null,
-                "seasonal_reason": null,
-                "created_at": "2026-05-26T06:30:00.000000Z",
-                "updated_at": "2026-05-26T06:30:00.000000Z",
-                "deleted_at": null,
+                "product_name": "Gas melon 3kg",
+                "restock_min": 22,
+                "restock_max": 32,
+                "restock_label": "Saran restock: 22 - 32 item untuk persediaan 7 hari ke depan.",
+                "urgency_description": "⚠️ DARURAT! Stok diperkirakan habis dalam 1 hari (sekitar tanggal 2026-06-02). Disarankan segera restock.",
                 "product": {
-                    "id": 1,
-                    "name": "Sabun cuci piring",
-                    "price": "15000.00",
-                    "image_url": null,
-                    "category_id": 1,
-                    "is_active": 1,
-                    "user_id": 1,
-                    "created_at": "...",
-                    "updated_at": "..."
+                    "id": 53,
+                    "name": "Gas melon 3kg",
+                    "price": "20000.00",
+                    "description": "Gas melon 3kg adalah produk contoh.",
+                    "image_url": "https://transisienergi.id/wp-content/uploads/2025/02/20250202_GAS-3-KG-LANGKA.jpg",
+                    "category_id": 10,
+                    "is_active": true,
+                    "user_id": 2,
+                    "created_at": "2026-06-02T11:35:39.000000Z",
+                    "updated_at": "2026-06-02T11:35:39.000000Z",
+                    "deleted_at": null
                 },
                 "ai_recommendation_actions": [],
                 "seasonal_recommendation": null
             },
             {
-                "id": 4,
-                "ai_run_id": 1,
-                "product_id": 6,
-                "product_name": "Gula pasir 1kg",
-                "product_price": "14000.00",
-                "current_stock": 14,
-                "avg_daily_sales": "4.20",
-                "recommed_restok_qty": 22,
-                "restock_min": 14,
-                "restock_max": 22,
-                "restock_label": "Saran restock: 14 - 22 item untuk persediaan 7 hari ke depan.",
-                "target_days_coverage": null,
+                "id": 52,
+                "ai_run_id": 3,
+                "product_id": 52,
+                "current_stock": 10,
+                "recommed_restok_qty": 5,
                 "risk_level": "MEDIUM",
-                "urgency_description": "⚡ PERHATIAN! Stok diestimasi akan habis dalam 4 hari ...",
-                "days_until_emty": 4,
-                "estimated_emty_date": "2026-05-29",
+                "days_until_emty": 5,
+                "estimated_emty_date": "2026-06-06",
                 "risk": "MEDIUM",
-                "description": "⚡ PERHATIAN! Stok diestimasi akan habis dalam 4 hari ...",
+                "description": "⚡ PERHATIAN! Stok diestimasi akan habis dalam 5 hari (sekitar tanggal 2026-06-06). Pertimbangkan untuk restock.",
                 "risk_point": 2,
-                "stock_timeline": null,
-                "seasonal_min": 21,
-                "seasonal_max": 33,
-                "seasonal_label": "Restock musiman 21 - 33 item untuk Eid al-Adha (estimated), Vesak Day (estimated).",
-                "seasonal_holiday": "Eid al-Adha (estimated), Vesak Day (estimated)",
-                "seasonal_reason": "Idul Adha seringkali melibatkan persiapan makanan yang membutuhkan gula dalam jumlah lebih banyak. ...",
-                "created_at": "2026-05-26T06:30:00.000000Z",
-                "updated_at": "2026-05-26T06:30:00.000000Z",
-                "deleted_at": null,
+                "product_name": "Rinso",
+                "restock_min": 3,
+                "restock_max": 5,
+                "restock_label": "Saran restock: 3 - 5 item untuk persediaan 7 hari ke depan.",
+                "urgency_description": "⚡ PERHATIAN! Stok diestimasi akan habis dalam 5 hari (sekitar tanggal 2026-06-06). Pertimbangkan untuk restock.",
                 "product": {
-                    "id": 6,
-                    "name": "Gula pasir 1kg",
-                    "price": "14000.00",
-                    "..."
+                    "id": 52,
+                    "name": "Rinso",
+                    "price": "5500.00",
+                    "description": null,
+                    "image_url": null,
+                    "category_id": 5,
+                    "is_active": true,
+                    "user_id": 2,
+                    "created_at": "2026-06-02T11:35:39.000000Z",
+                    "updated_at": "2026-06-02T11:35:39.000000Z",
+                    "deleted_at": null
                 },
                 "ai_recommendation_actions": [],
+                "seasonal_recommendation": null
+            }
+        ]
+    }
+}
+```
+
+---
+
+### Response: Success dengan Seasonal Recommendation (200)
+
+```json
+{
+    "success": true,
+    "message": "Latest AI STOCKS run retrieved successfully",
+    "data": {
+        "id": 5,
+        "user_id": 2,
+        "type_ai": "STOCKS",
+        "status": "COMPLETED",
+        "generated_at": "2026-06-10T08:00:00.000000Z",
+        "error_message": null,
+        "seasonal_insight": {
+            "has_upcoming_holiday": true,
+            "upcoming_holidays": [
+                {
+                    "name": "Idul Adha",
+                    "date": "2026-06-17",
+                    "days_away": 7,
+                    "impact": "Meningkatnya permintaan daging dan bahan masakan"
+                }
+            ],
+            "seasonal_advice": "Idul Adha tinggal 7 hari lagi. Disarankan menambah stok daging, bumbu masak, dan minyak goreng.",
+            "source": "system"
+        },
+        "total_products": 8,
+        "created_at": "2026-06-10T08:00:00.000000Z",
+        "updated_at": "2026-06-10T08:00:00.000000Z",
+        "deleted_at": null,
+        "ai_recommendations": [
+            {
+                "id": 60,
+                "ai_run_id": 5,
+                "product_id": 60,
+                "current_stock": 5,
+                "recommed_restok_qty": 40,
+                "risk_level": "HIGH",
+                "days_until_emty": 3,
+                "estimated_emty_date": "2026-06-13",
+                "risk": "HIGH",
+                "description": "⚠️ Stok menipis! Segera restok. Ditambah permintaan musiman karena Idul Adha.",
+                "risk_point": 80,
+                "product_name": "Minyak Goreng",
+                "restock_min": 30,
+                "restock_max": 50,
+                "restock_label": "Saran restock: 30 - 50 item untuk persediaan 7 hari ke depan.",
+                "urgency_description": "⚠️ Stok menipis! Segera restok. Ditambah permintaan musiman karena Idul Adha.",
+                "product": {
+                    "id": 60,
+                    "name": "Minyak Goreng",
+                    "price": "14000.00",
+                    "description": "Minyak goreng kemasan",
+                    "image_url": null,
+                    "category_id": 3,
+                    "is_active": true,
+                    "user_id": 2,
+                    "created_at": "2026-06-10T07:00:00.000000Z",
+                    "updated_at": "2026-06-10T07:00:00.000000Z",
+                    "deleted_at": null
+                },
+                "ai_recommendation_actions": [
+                    {
+                        "id": 2,
+                        "ai_recommendation_id": 60,
+                        "action_type": "DONE",
+                        "action_at": "2026-06-10T09:00:00.000000Z",
+                        "created_at": "2026-06-10T09:00:00.000000Z",
+                        "updated_at": "2026-06-10T09:00:00.000000Z",
+                        "deleted_at": null
+                    }
+                ],
                 "seasonal_recommendation": {
                     "id": 1,
-                    "ai_recommendation_id": 4,
-                    "min": 21,
-                    "max": 33,
-                    "label": "Restock musiman 21 - 33 item untuk Eid al-Adha (estimated), Vesak Day (estimated).",
-                    "holiday": "Eid al-Adha (estimated), Vesak Day (estimated)",
-                    "reason": "Idul Adha seringkali melibatkan persiapan makanan ...",
-                    "created_at": "...",
-                    "updated_at": "..."
+                    "ai_recommendation_id": 60,
+                    "min": 50,
+                    "max": 70,
+                    "label": "Tambah stok 50-70 pcs untuk Idul Adha",
+                    "holiday": "Idul Adha",
+                    "reason": "Idul Adha meningkatkan permintaan minyak goreng untuk memasak daging kurban",
+                    "created_at": "2026-06-10T08:00:00.000000Z",
+                    "updated_at": "2026-06-10T08:00:00.000000Z",
+                    "deleted_at": null
                 }
             }
         ]
@@ -167,81 +202,17 @@ GET /api/ai/runs/latest/stocks
 }
 ```
 
-#### Response Field Reference — `data` (AiRun)
-
-| Field              | Type      | Deskripsi                                                     |
-| ------------------ | --------- | ------------------------------------------------------------- |
-| `id`               | integer   | ID AI run                                                     |
-| `user_id`          | integer   | ID user pemilik                                               |
-| `type_ai`          | string    | Tipe AI: `STOCKS`                                             |
-| `status`           | string    | Status: `PROCESSING`, `COMPLETED`, `FAILED`                   |
-| `generated_at`     | datetime  | Waktu AI selesai generate                                     |
-| `error_message`    | string?   | Pesan error jika status `FAILED`                              |
-| `seasonal_insight` | object?   | Insight musiman (lihat tabel di bawah)                        |
-| `total_products`   | integer?  | Total produk yang dianalisis                                  |
-| `ai_recommendations` | array  | Array rekomendasi per produk (diurutkan `risk_point` DESC)    |
-
-#### Response Field Reference — `seasonal_insight`
-
-| Field                | Type     | Deskripsi                                     |
-| -------------------- | -------- | --------------------------------------------- |
-| `has_upcoming_holiday`| boolean | Apakah ada hari libur yang mendekat           |
-| `upcoming_holidays`  | array    | Daftar hari libur yang mendekat               |
-| `upcoming_holidays[].date` | string | Tanggal hari libur (YYYY-MM-DD)         |
-| `upcoming_holidays[].name` | string | Nama hari libur                         |
-| `upcoming_holidays[].days_away` | integer | Berapa hari lagi                   |
-| `upcoming_holidays[].impact` | string | Tingkat dampak: `HIGH`, `MEDIUM`, `LOW` |
-| `seasonal_advice`    | string   | Saran musiman dari AI (bahasa Indonesia)      |
-| `source`             | string   | Model AI yang digunakan                       |
-
-#### Response Field Reference — `ai_recommendations[]`
-
-| Field                  | Type      | Deskripsi                                                   |
-| ---------------------- | --------- | ----------------------------------------------------------- |
-| `id`                   | integer   | ID rekomendasi                                              |
-| `ai_run_id`            | integer   | FK ke AI run                                                |
-| `product_id`           | integer   | FK ke produk                                                |
-| `product_name`         | string?   | Nama produk (cache)                                         |
-| `product_price`        | decimal   | Harga produk (cache)                                        |
-| `current_stock`        | integer   | Stok saat ini                                               |
-| `avg_daily_sales`      | decimal   | Rata-rata penjualan harian                                  |
-| `recommed_restok_qty`  | integer   | Jumlah restock yang disarankan (= `restock_max`)            |
-| `restock_min`          | integer?  | Minimum restock range                                       |
-| `restock_max`          | integer?  | Maximum restock range                                       |
-| `restock_label`        | string?   | Label deskripsi range restock                               |
-| `target_days_coverage` | integer?  | Target hari cakupan stok                                    |
-| `risk_level`           | string?   | Level urgensi: `CRITICAL`, `MEDIUM`, `NORMAL`               |
-| `urgency_description`  | string?   | Deskripsi urgensi (dengan emoji)                            |
-| `days_until_emty`      | integer?  | Estimasi hari sampai stok habis (`null` = aman)             |
-| `estimated_emty_date`  | date?     | Estimasi tanggal stok habis (`null` = aman)                 |
-| `risk`                 | string?   | Level risiko: `CRITICAL`, `MEDIUM`, `NORMAL`                |
-| `description`          | string?   | Deskripsi (sama dengan `urgency_description`)               |
-| `risk_point`           | integer   | Skor risiko: `3` = CRITICAL, `2` = MEDIUM, `1` = NORMAL    |
-| `stock_timeline`       | array?    | Timeline stok harian (jika tersedia)                        |
-| `seasonal_min`         | integer?  | Min restock musiman (dari `seasonal_recommendation`)        |
-| `seasonal_max`         | integer?  | Max restock musiman (dari `seasonal_recommendation`)        |
-| `seasonal_label`       | string?   | Label restock musiman                                       |
-| `seasonal_holiday`     | string?   | Nama hari libur terkait                                     |
-| `seasonal_reason`      | string?   | Alasan restock musiman dari AI                              |
-| `product`              | object    | Data produk lengkap (relasi)                                |
-| `ai_recommendation_actions` | array | Daftar aksi user pada rekomendasi ini                  |
-| `seasonal_recommendation` | object? | Data restock musiman detail (relasi)                     |
-
-#### Response Field Reference — `seasonal_recommendation`
-
-| Field                   | Type     | Deskripsi                              |
-| ----------------------- | -------- | -------------------------------------- |
-| `id`                    | integer  | ID seasonal recommendation             |
-| `ai_recommendation_id`  | integer  | FK ke AI recommendation               |
-| `min`                   | integer? | Minimum restock musiman               |
-| `max`                   | integer? | Maximum restock musiman               |
-| `label`                 | string?  | Label deskripsi restock musiman       |
-| `holiday`               | string?  | Nama hari libur                       |
-| `reason`                | string?  | Alasan AI untuk restock musiman       |
-
 ---
 
-#### ❌ 403 Forbidden — Tidak punya subscription PRO
+### Response: Error 401 - Unauthenticated
+
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+
+### Response: Error 403 - Bukan PRO
 
 ```json
 {
@@ -250,7 +221,7 @@ GET /api/ai/runs/latest/stocks
 }
 ```
 
-#### ❌ 404 Not Found — Belum ada data AI run
+### Response: Error 404 - Belum Ada AI Run
 
 ```json
 {
@@ -262,114 +233,102 @@ GET /api/ai/runs/latest/stocks
 
 ---
 
----
-
-## 2. Update Action
-
-Mengupdate aksi user terhadap rekomendasi AI. User bisa menandai rekomendasi sebagai `DONE` (sudah dieksekusi) atau `IGNORE` (diabaikan).
-
-### Request
+### Diagram Relasi
 
 ```
-PATCH /api/ai/recommendations/{recommendationId}/action
+AiRun (1)
+  ├── type_ai: "STOCKS"
+  ├── seasonal_insight: object
+  ├── total_products: int
+  │
+  └── ai_recommendations (*)
+        ├── product (1) ─── Product
+        ├── ai_recommendation_actions (*)
+        └── seasonal_recommendation (0..1)
 ```
 
-**Headers:**
+### Field Descriptions
 
-| Header          | Value              |
-| --------------- | ------------------ |
-| `Authorization` | `Bearer {token}`   |
-| `Accept`        | `application/json` |
-| `Content-Type`  | `application/json` |
+#### `data` (AiRun)
 
-**Path Parameters:**
+| Field | Type | Description |
+|-------|------|-------------|
+| id | int | Primary key |
+| user_id | int | Foreign key ke users |
+| type_ai | string | `"STOCKS"`, `"BUSY"`, atau `"PORTFOLIO"` |
+| status | string | `"PROCESSING"`, `"COMPLETED"`, `"FAILED"` |
+| generated_at | datetime | Waktu AI run di-generate |
+| error_message | string\|null | Pesan error jika gagal |
+| seasonal_insight | object\|null | Insight musiman dari AI (`has_upcoming_holiday`, `upcoming_holidays[]`, `seasonal_advice`, `source`) |
+| total_products | int\|null | Total produk yang dianalisis |
+| created_at | datetime | Timestamp created |
+| updated_at | datetime | Timestamp updated |
+| deleted_at | datetime\|null | Soft delete timestamp |
+| ai_recommendations | array | Daftar rekomendasi produk (lihat di bawah) |
 
-| Parameter          | Type    | Required | Deskripsi                 |
-| ------------------ | ------- | -------- | ------------------------- |
-| `recommendationId` | integer | ✅       | ID dari AI recommendation |
+#### `ai_recommendations[]`
 
-**Body:**
+| Field | Type | Description |
+|-------|------|-------------|
+| id | int | Primary key |
+| ai_run_id | int | Foreign key ke ai_runs |
+| product_id | int | Foreign key ke products |
+| current_stock | int | Stok saat ini |
+| recommed_restok_qty | int | Jumlah restok yang direkomendasikan |
+| risk_level | string | `"LOW"`, `"MEDIUM"`, `"HIGH"`, `"CRITICAL"` |
+| days_until_emty | int\|null | Perkiraan hari hingga stok habis |
+| estimated_emty_date | date\|null | Perkiraan tanggal stok habis |
+| risk | string\|null | Label risiko |
+| description | string\|null | Deskripsi risiko (bisa mengandung emoji) |
+| risk_point | int | Poin risiko (semakin tinggi semakin urgent) |
+| product_name | string\|null | Nama produk (denormalized) |
+| restock_min | int\|null | Minimum rekomendasi restock |
+| restock_max | int\|null | Maksimum rekomendasi restock |
+| restock_label | string\|null | Label restock dalam bahasa natural |
+| urgency_description | string\|null | Deskripsi urgensi (bisa mengandung emoji) |
+| product | object\|null | Data produk (relasi belongsTo) |
+| ai_recommendation_actions | array | Riwayat aksi yang sudah dilakukan (DONE/IGNORE) |
+| seasonal_recommendation | object\|null | Rekomendasi musiman (jika ada hari libur) |
 
-```json
-{
-    "action_type": "DONE"
-}
-```
+#### `product` (Product)
 
-| Field         | Type   | Required | Deskripsi                       |
-| ------------- | ------ | -------- | ------------------------------- |
-| `action_type` | string | ✅       | Tipe aksi: `DONE` atau `IGNORE` |
+| Field | Type | Description |
+|-------|------|-------------|
+| id | int | Primary key |
+| name | string | Nama produk |
+| price | decimal | Harga produk |
+| description | string\|null | Deskripsi produk |
+| image_url | string\|null | URL gambar produk |
+| category_id | int\|null | Foreign key ke categories |
+| is_active | bool | Status aktif produk |
+| user_id | int | Foreign key ke users |
+| created_at | datetime | Timestamp created |
+| updated_at | datetime | Timestamp updated |
+| deleted_at | datetime\|null | Soft delete timestamp |
 
----
+#### `ai_recommendation_actions[]`
 
-### Response
+| Field | Type | Description |
+|-------|------|-------------|
+| id | int | Primary key |
+| ai_recommendation_id | int | Foreign key ke ai_recommendations |
+| action_type | string\|null | `"DONE"` atau `"IGNORE"` |
+| action_at | datetime\|null | Waktu aksi dilakukan |
+| created_at | datetime | Timestamp created |
+| updated_at | datetime | Timestamp updated |
+| deleted_at | datetime\|null | Soft delete timestamp |
 
-#### ✅ 200 OK — Berhasil
+#### `seasonal_recommendation`
 
-```json
-{
-    "success": true,
-    "message": "Action updated successfully",
-    "data": {
-        "id": 1,
-        "ai_recommendation_id": 4,
-        "action_type": "DONE",
-        "action_at": "2026-05-26T06:35:00.000000Z",
-        "created_at": "2026-05-26T06:35:00.000000Z",
-        "updated_at": "2026-05-26T06:35:00.000000Z",
-        "deleted_at": null
-    }
-}
-```
-
-#### Response Field Reference — `data` (AiRecommendationAction)
-
-| Field                    | Type     | Deskripsi                                 |
-| ------------------------ | -------- | ----------------------------------------- |
-| `id`                     | integer  | ID action                                 |
-| `ai_recommendation_id`   | integer  | FK ke AI recommendation                  |
-| `action_type`            | string   | Tipe aksi: `DONE` atau `IGNORE`          |
-| `action_at`              | datetime | Waktu aksi dilakukan                      |
-
----
-
-#### ❌ 403 Forbidden — Tidak punya subscription PRO
-
-```json
-{
-    "success": false,
-    "message": "This feature requires an active PRO subscription."
-}
-```
-
-#### ❌ 404 Not Found — Recommendation tidak ditemukan
-
-```json
-{
-    "success": false,
-    "message": "AI recommendation not found"
-}
-```
-
-#### ❌ 422 Unprocessable Entity — Validasi gagal
-
-```json
-{
-    "message": "The action_type field is required.",
-    "errors": {
-        "action_type": [
-            "The action_type field is required."
-        ]
-    }
-}
-```
-
----
-
-## Notes
-
-- Rekomendasi diurutkan berdasarkan `risk_point` DESC (CRITICAL → MEDIUM → NORMAL).
-- Field `seasonal_*` di `ai_recommendations` adalah **appended attributes** yang diambil dari relasi `seasonal_recommendation`. Keduanya berisi data yang sama.
-- `updateAction` menggunakan `updateOrCreate`, jadi jika user mengubah aksi dari `DONE` ke `IGNORE` (atau sebaliknya), data yang lama akan di-update, bukan dibuat baru.
-- `recommed_restok_qty` diisi dengan nilai `restock_max` dari AI response.
-- `days_until_emty` dan `estimated_emty_date` bisa `null` jika stok diprediksi aman (tidak akan habis dalam periode forecast).
+| Field | Type | Description |
+|-------|------|-------------|
+| id | int | Primary key |
+| ai_recommendation_id | int | Foreign key ke ai_recommendations |
+| min | int\|null | Stok minimum rekomendasi musiman |
+| max | int\|null | Stok maksimum rekomendasi musiman |
+| label | string\|null | Label rekomendasi |
+| holiday | string\|null | Nama hari libur / event |
+| reason | text\|null | Alasan mengapa stok perlu ditambah |
+| created_at | datetime | Timestamp created |
+| updated_at | datetime | Timestamp updated |
+| deleted_at | datetime\|null | Soft delete timestamp |
