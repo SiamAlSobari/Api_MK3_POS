@@ -294,10 +294,10 @@ class ReportController extends Controller
             $salesQuery->where(function ($query) use ($search) {
                 $query
                     ->whereHas("items.product", function ($q) use ($search) {
-                        $q->where("name", "LIKE", "%" . $search . "%");
+                        $q->where("name", "ILIKE", "%" . $search . "%");
                     })
                     ->orWhere("id", "LIKE", "%" . $search . "%")
-                    ->orWhere("total_amount", $search);
+                    ->when(is_numeric($search), fn($q) => $q->orWhere("total_amount", $search));
             });
         }
 
