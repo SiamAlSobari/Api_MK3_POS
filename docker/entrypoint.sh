@@ -27,6 +27,10 @@ php artisan view:cache
 echo "Running database migrations..."
 php artisan migrate --force
 
+# Generate Swagger API Documentation
+echo "Generating Swagger API documentation..."
+php artisan l5-swagger:generate
+
 # Execute the main container command (FPM or custom cmd)
 echo "Starting application..."
 exec "$@"
