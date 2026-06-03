@@ -7,6 +7,7 @@ use App\Models\Profile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use OpenApi\Attributes as OA;
 
 class ProfileController extends Controller
 {
@@ -22,9 +23,21 @@ class ProfileController extends Controller
             ->exists();
     }
 
-    /**
-     * Display the authenticated user's profile.
-     */
+    #[OA\Get(
+        path: "/profile",
+        summary: "Get authenticated user profile",
+        tags: ["Profile"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Profile retrieved", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "data", ref: "#/components/schemas/Profile"),
+                ],
+                type: "object"
+            )),
+        ]
+    )]
     public function show(Request $request): JsonResponse
     {
         $profile = $request
@@ -58,9 +71,29 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created profile if it does not exist.
-     */
+    #[OA\Post(
+        path: "/profile",
+        summary: "Create user profile",
+        tags: ["Profile"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(ref: "#/components/schemas/ProfileStoreRequest")
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: "Profile created", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "data", ref: "#/components/schemas/Profile"),
+                ],
+                type: "object"
+            )),
+            new OA\Response(response: 409, description: "Profile already exists"),
+        ]
+    )]
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -136,9 +169,28 @@ class ProfileController extends Controller
         );
     }
 
-    /**
-     * Update the authenticated user's profile.
-     */
+    #[OA\Put(
+        path: "/profile",
+        summary: "Update user profile (also accepts PATCH)",
+        tags: ["Profile"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(ref: "#/components/schemas/ProfileUpdateRequest")
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Profile updated", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "data", ref: "#/components/schemas/Profile"),
+                ],
+                type: "object"
+            )),
+        ]
+    )]
     public function update(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -204,9 +256,20 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Delete / Reset the authenticated user's profile.
-     */
+    #[OA\Delete(
+        path: "/profile",
+        summary: "Delete / reset user profile",
+        tags: ["Profile"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Profile deleted", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string", example: "Profile deleted / reset successfully."),
+                ],
+                type: "object"
+            )),
+        ]
+    )]
     public function destroy(Request $request): JsonResponse
     {
         $profile = $request->user()->profile;

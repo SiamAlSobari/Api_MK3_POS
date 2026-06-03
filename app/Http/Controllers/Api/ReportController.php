@@ -10,9 +10,19 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 class ReportController extends Controller
 {
+    #[OA\Get(
+        path: "/reports",
+        summary: "Get sales reports for all periods",
+        tags: ["Reports"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Report data retrieved", content: new OA\JsonContent(ref: "#/components/schemas/ReportResponse")),
+        ]
+    )]
     public function index(Request $request): JsonResponse
     {
         $userId = $request->user()->id;
@@ -77,32 +87,27 @@ class ReportController extends Controller
         $dateRange = $this->getDateRange($period);
         $previousRange = $this->getPreviousDateRange($period);
 
-        // Total Pendapatan
-        $totalRevenue = Transaction::where("user_id", $userId)
+        $aggregates = Transaction::selectRaw("
+                COALESCE(SUM(CASE WHEN trx_date >= ? AND trx_date <= ? THEN total_amount END), 0) as total_revenue,
+                COALESCE(COUNT(CASE WHEN trx_date >= ? AND trx_date <= ? THEN 1 END), 0) as total_transactions,
+                COALESCE(SUM(CASE WHEN trx_date >= ? AND trx_date <= ? THEN total_amount END), 0) as previous_revenue
+            ", [
+                $dateRange["start"], $dateRange["end"],
+                $dateRange["start"], $dateRange["end"],
+                $previousRange["start"] ?? "1970-01-01", $previousRange["end"] ?? "1970-01-01",
+            ])
+            ->where("user_id", $userId)
             ->where("trx_type", "SALE")
-            ->whereBetween("trx_date", [$dateRange["start"], $dateRange["end"]])
-            ->sum("total_amount");
+            ->first();
 
-        $previousRevenue = $previousRange
-            ? Transaction::where("user_id", $userId)
-                ->where("trx_type", "SALE")
-                ->whereBetween("trx_date", [
-                    $previousRange["start"],
-                    $previousRange["end"],
-                ])
-                ->sum("total_amount")
-            : 0;
+        $totalRevenue = (float) $aggregates->total_revenue;
+        $totalTransactions = (int) $aggregates->total_transactions;
+        $previousRevenue = (float) $aggregates->previous_revenue;
 
         $revenueChange =
             $previousRevenue > 0
                 ? (($totalRevenue - $previousRevenue) / $previousRevenue) * 100
                 : 0;
-
-        // Total Transaksi
-        $totalTransactions = Transaction::where("user_id", $userId)
-            ->where("trx_type", "SALE")
-            ->whereBetween("trx_date", [$dateRange["start"], $dateRange["end"]])
-            ->count();
 
         // Rata-rata Keranjang
         $avgBasket =
@@ -249,7 +254,26 @@ class ReportController extends Controller
                 return null;
         }
     }
-    // Fungsi tambahan untuk mendapatkan riwayat transaksi penjualan (SALE) dengan pagination
+    #[OA\Get(
+        path: "/reports/sales-history",
+        summary: "Get paginated sales history",
+        tags: ["Reports"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "period", in: "query", required: false, schema: new OA\Schema(type: "string", default: "semua"), example: "hari_ini"),
+            new OA\Parameter(name: "per_page", in: "query", required: false, schema: new OA\Schema(type: "integer", default: 10), example: 10),
+            new OA\Parameter(name: "search", in: "query", required: false, schema: new OA\Schema(type: "string"), example: "mie"),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Sales history retrieved", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "data", type: "object"),
+                ],
+                type: "object"
+            )),
+        ]
+    )]
     public function salesHistory(Request $request): JsonResponse
     {
         $userId = $request->user()->id;

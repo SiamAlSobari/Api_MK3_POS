@@ -1,0 +1,88 @@
+DOKUMEN RINGKASAN EKSEKUTIF & SPESIFIKASI PROYEK: LUXEPOS
+
+========================================================================
+I. IDENTITAS PRODUK
+========================================================================
+Nama Produk         : LuxePOS
+Klasifikasi Sistem  : Intelligent Point of Sale (POS) System & Decision Support System (DSS)
+Segmentasi Target   : Ritel Modern, Warung Tradisional, dan Usaha Mikro, Kecil, 
+                      dan Menengah (UMKM)
+
+========================================================================
+II. DESKRIPSI DAN PROPOSISI NILAI (VALUE PROPOSITION)
+========================================================================
+LuxePOS merupakan platform Point of Sale (POS) mutakhir berbasis teknologi cloud 
+dan Kecerdasan Buatan (Artificial Intelligence) yang dirancang untuk mentransformasi 
+tata kelola operasional dan memodernisasi ekosistem bisnis ritel serta UMKM. 
+
+Berbeda dengan sistem kasir konvensional yang hanya berfungsi sebagai pencatat 
+transaksi pasif, LuxePOS bertindak sebagai Decision Support System (DSS) yang 
+menyajikan analisis prediktif secara otomatis. Sistem ini mengintegrasikan 
+teknologi AI untuk memberikan kapabilitas pengambilan keputusan strategis yang 
+akurat dan berbasis data (data-driven decision making), meliputi:
+
+1. Analisis Prediktif Inventaris (Smart Restock Analysis)
+   Mengoptimalkan rantai pasok dengan memprediksi kebutuhan stok barang secara 
+   presisi berdasarkan historis data, guna meminimalisasi risiko penumpukan 
+   modal (overstock) maupun kehilangan potensi penjualan (out-of-stock).
+
+2. Proyeksi Beban Kerja Operasional (Peak Hours Forecasting)
+   Menganalisis pola transaksi untuk memproyeksikan periode sibuk operasional. 
+   Hal ini memungkinkan pemilik usaha melakukan efisiensi alokasi sumber daya 
+   manusia (penjadwalan staf) secara optimal.
+
+3. Evaluasi Kinerja Produk Otomatis
+   Menyajikan metrik performa produk secara komprehensif untuk membantu 
+   menentukan profitabilitas produk, merumuskan strategi promosi, serta 
+   mengevaluasi portofolio produk yang dipasarkan.
+
+========================================================================
+III. STRUKTUR ORGANISASI TIM DAN MATRIKS DISTRIBUSI KERJA
+========================================================================
+Proyek dikembangkan menggunakan metodologi kolaborasi lintas fungsi 
+(Cross-Functional Collaboration) di mana setiap personel berkontribusi 
+secara menyeluruh pada Siklus Hidup Pengembangan Perangkat Lunak (SDLC):
+
+1. Nawaf Gadi Alfatih
+   Tanggung Jawab: Analisis Sistem, Rekayasa Backend, Pengembangan Frontend, 
+                   dan Perancangan UI/UX.
+
+2. Rona Miftahuljanah
+   Tanggung Jawab: Analisis Sistem, Rekayasa Backend, Pengembangan Frontend, 
+                   dan Perancangan UI/UX.
+
+3. Siam Al Sobari
+   Tanggung Jawab: Analisis Sistem, Rekayasa Backend, Pengembangan Frontend, 
+                   dan Perancangan UI/UX.
+
+4. Tiyas Ayu Lestari
+   Tanggung Jawab: Analisis Sistem, Rekayasa Backend, Pengembangan Frontend, 
+                   dan Perancangan UI/UX.
+
+Asistensi Teknologi Desain:
+Proses perancangan antarmuka (UI/UX Design) diselesaikan secara kolaboratif 
+oleh tim dengan memanfaatkan teknologi AI Generatif (Stitch AI / Gemini).
+
+========================================================================
+IV. ARSITEKTUR REPOSITORI KODE SUMBER (SOURCE CODE ARCHITECTURE)
+========================================================================
+Untuk memastikan kemudahan pemeliharaan dan skalabilitas, arsitektur kode 
+sumber LuxePOS dibagi menjadi beberapa repositori modular:
+
+1. Backend Service (RESTful API)
+   Tautan: https://github.com/SiamAlSobari/Api_MK3_POS
+
+2. Frontend Client (User Interface)
+   Tautan: https://github.com/nawafgadi/kasirApp
+
+3. AI Forecasting Service (Predictive Engine)
+   Tautan: https://github.com/SiamAlSobari/ForecastPOS
+
+========================================================================
+V. MEDIA DISTRIBUSI & ARTEFAK APLIKASI (DELIVERABLES)
+========================================================================
+Artefak aplikasi hasil kompilasi (executable/build binary) dapat diakses 
+melalui penyimpanan terpusat di bawah ini:
+
+- Direktori Distribusi (Google Drive):
+  https://drive.google.com/drive/u/3/folders/1KNkpDIcSEYP3isHuMQIfQB7m9jdsHCR0

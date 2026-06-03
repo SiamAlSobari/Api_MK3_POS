@@ -10,16 +10,30 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use OpenApi\Attributes as OA;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    #[OA\Get(
+        path: "/products",
+        summary: "List all products",
+        tags: ["Products"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Products retrieved", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "data", type: "array", items: new OA\Items(ref: "#/components/schemas/Product")),
+                ],
+                type: "object"
+            )),
+        ]
+    )]
     public function index(Request $request): JsonResponse
     {
         $products = Product::where("user_id", $request->user()->id)
             ->with(["category", "stocks"])
+            ->latest()
             ->get();
 
         return response()->json([
@@ -28,9 +42,29 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    #[OA\Post(
+        path: "/products",
+        summary: "Create a new product",
+        tags: ["Products"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(ref: "#/components/schemas/ProductStoreRequest")
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: "Product created", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "data", ref: "#/components/schemas/Product"),
+                ],
+                type: "object"
+            )),
+            new OA\Response(response: 422, description: "Validation error"),
+        ]
+    )]
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -78,10 +112,7 @@ class ProductController extends Controller
             }
         }
 
-        $product =DB::transaction(function () use (
-            $data,
-            $request,
-        ) {
+        $product = DB::transaction(function () use ($data, $request) {
             $product = Product::create($data);
 
             $product->stocks()->create([
@@ -119,9 +150,25 @@ class ProductController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
+    #[OA\Get(
+        path: "/products/{product}",
+        summary: "Get product by ID",
+        tags: ["Products"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "product", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Product retrieved", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "data", ref: "#/components/schemas/Product"),
+                ],
+                type: "object"
+            )),
+            new OA\Response(response: 404, description: "Product not found"),
+        ]
+    )]
     public function show(Product $product): JsonResponse
     {
         $product->load(["category", "stocks"]);
@@ -132,9 +179,32 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    #[OA\Put(
+        path: "/products/{product}",
+        summary: "Update a product",
+        tags: ["Products"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "product", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(ref: "#/components/schemas/ProductUpdateRequest")
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Product updated", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "data", ref: "#/components/schemas/Product"),
+                ],
+                type: "object"
+            )),
+            new OA\Response(response: 422, description: "Validation error"),
+        ]
+    )]
     public function update(Request $request, Product $product): JsonResponse
     {
         $data = $request->validate([
@@ -182,11 +252,13 @@ class ProductController extends Controller
 
         DB::transaction(function () use ($data, $request, $product) {
             $stockToAdd = $data["stock"] ?? 0;
-            
+
             // Remove fields that should not be mass updated to product table directly if necessary
             // e.g. stock, image (since image uses image_url)
             unset($data["stock"]);
-            if (isset($data["image"])) unset($data["image"]);
+            if (isset($data["image"])) {
+                unset($data["image"]);
+            }
 
             $product->update($data);
 
@@ -223,9 +295,24 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    #[OA\Delete(
+        path: "/products/{product}",
+        summary: "Delete a product",
+        tags: ["Products"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "product", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Product deleted", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string", example: "Product deleted successfully."),
+                ],
+                type: "object"
+            )),
+            new OA\Response(response: 404, description: "Product not found"),
+        ]
+    )]
     public function destroy(Product $product): JsonResponse
     {
         $product->delete();

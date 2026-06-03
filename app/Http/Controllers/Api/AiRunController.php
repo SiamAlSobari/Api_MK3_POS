@@ -14,6 +14,7 @@ use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use OpenApi\Attributes as OA;
 
 class AiRunController extends Controller
 {
@@ -26,9 +27,17 @@ class AiRunController extends Controller
             ->exists();
     }
 
-    /**
-     * Get latest AI run for STOCKS with recommendations and actions
-     */
+    #[OA\Get(
+        path: "/ai/runs/latest/stocks",
+        summary: "Get latest AI stock analysis",
+        tags: ["AI"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Latest STOCKS run"),
+            new OA\Response(response: 403, description: "PRO subscription required"),
+            new OA\Response(response: 404, description: "No AI run found"),
+        ]
+    )]
     public function latestStocks(Request $request): JsonResponse
     {
         if (!$this->checkPro($request->user())) {
@@ -90,9 +99,17 @@ class AiRunController extends Controller
         ]);
     }
 
-    /**
-     * Get latest AI run for BUSY hours with predictions
-     */
+    #[OA\Get(
+        path: "/ai/runs/latest/busy-hours",
+        summary: "Get latest busy hours prediction",
+        tags: ["AI"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Latest BUSY hours run"),
+            new OA\Response(response: 403, description: "PRO subscription required"),
+            new OA\Response(response: 404, description: "No AI run found"),
+        ]
+    )]
     public function latestBusyHours(Request $request): JsonResponse
     {
         if (!$this->checkPro($request->user())) {
@@ -136,9 +153,17 @@ class AiRunController extends Controller
         ]);
     }
 
-    /**
-     * Get latest AI run for PORTFOLIO with insights
-     */
+    #[OA\Get(
+        path: "/ai/runs/latest/portfolio",
+        summary: "Get latest portfolio insights",
+        tags: ["AI"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Latest PORTFOLIO run"),
+            new OA\Response(response: 403, description: "PRO subscription required"),
+            new OA\Response(response: 404, description: "No AI run found"),
+        ]
+    )]
     public function latestPortfolio(Request $request): JsonResponse
     {
         if (!$this->checkPro($request->user())) {
@@ -176,6 +201,17 @@ class AiRunController extends Controller
         ]);
     }
 
+    #[OA\Post(
+        path: "/ai/runs/analyze",
+        summary: "Run AI stock/restock analysis",
+        tags: ["AI"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "AI analysis completed"),
+            new OA\Response(response: 403, description: "PRO subscription required"),
+            new OA\Response(response: 500, description: "AI analysis failed"),
+        ]
+    )]
     public function analyze(Request $request): JsonResponse
     {
         if (!$this->checkPro($request->user())) {
@@ -314,6 +350,17 @@ class AiRunController extends Controller
         }
     }
 
+    #[OA\Post(
+        path: "/ai/runs/analyze-busy-hours",
+        summary: "Run AI busy hours analysis",
+        tags: ["AI"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Busy hour analysis completed"),
+            new OA\Response(response: 403, description: "PRO subscription required"),
+            new OA\Response(response: 500, description: "Analysis failed"),
+        ]
+    )]
     public function analyzeBusyHours(Request $request): JsonResponse
     {
         if (!$this->checkPro($request->user())) {
@@ -490,9 +537,17 @@ class AiRunController extends Controller
         }
     }
 
-    /**
-     * Generate AI portfolio insights from transaction data
-     */
+    #[OA\Post(
+        path: "/ai/runs/generate-portfolio",
+        summary: "Generate AI portfolio insights",
+        tags: ["AI"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Portfolio generated"),
+            new OA\Response(response: 403, description: "PRO subscription required"),
+            new OA\Response(response: 500, description: "Generation failed"),
+        ]
+    )]
     public function generatePortfolio(Request $request): JsonResponse
     {
         if (!$this->checkPro($request->user())) {
@@ -607,9 +662,24 @@ class AiRunController extends Controller
         }
     }
 
-    /**
-     * Update action for AI recommendation
-     */
+    #[OA\Patch(
+        path: "/ai/recommendations/{recommendationId}/action",
+        summary: "Update AI recommendation action (DONE/IGNORE)",
+        tags: ["AI"],
+        security: [["bearerAuth" => []]],
+        parameters: [
+            new OA\Parameter(name: "recommendationId", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: "#/components/schemas/RecommendationActionRequest")
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Action updated"),
+            new OA\Response(response: 403, description: "PRO subscription required"),
+            new OA\Response(response: 404, description: "Recommendation not found"),
+        ]
+    )]
     public function updateAction(
         Request $request,
         int $recommendationId,

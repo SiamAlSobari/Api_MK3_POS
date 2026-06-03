@@ -12,9 +12,29 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
+    #[OA\Post(
+        path: "/auth/register",
+        summary: "Register a new user",
+        tags: ["Auth"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: "#/components/schemas/AuthRegisterRequest")
+        ),
+        responses: [
+            new OA\Response(response: 201, description: "User registered successfully", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string", example: "Register berhasil."),
+                    new OA\Property(property: "user", ref: "#/components/schemas/User"),
+                ],
+                type: "object"
+            )),
+            new OA\Response(response: 422, description: "Validation error"),
+        ]
+    )]
     public function register(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -129,6 +149,27 @@ class AuthController extends Controller
         });
     }
 
+    #[OA\Post(
+        path: "/auth/login",
+        summary: "Login user",
+        tags: ["Auth"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: "#/components/schemas/AuthLoginRequest")
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Login successful", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string", example: "Login berhasil."),
+                    new OA\Property(property: "token", type: "string"),
+                    new OA\Property(property: "token_type", type: "string", example: "Bearer"),
+                    new OA\Property(property: "user", ref: "#/components/schemas/User"),
+                ],
+                type: "object"
+            )),
+            new OA\Response(response: 401, description: "Invalid credentials"),
+        ]
+    )]
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
@@ -154,6 +195,22 @@ class AuthController extends Controller
         ]);
     }
     
+    #[OA\Get(
+        path: "/auth/session",
+        summary: "Check current session validity",
+        tags: ["Auth"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Session valid", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string", example: "Session valid."),
+                    new OA\Property(property: "user", ref: "#/components/schemas/User"),
+                ],
+                type: "object"
+            )),
+            new OA\Response(response: 401, description: "Unauthenticated"),
+        ]
+    )]
     public function checkSession(Request $request): JsonResponse
     {
         if ($request->user()) {

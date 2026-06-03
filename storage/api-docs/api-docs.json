@@ -1,0 +1,2532 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "POS API Documentation",
+        "description": "API documentation for Point of Sale application",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api"
+        }
+    ],
+    "paths": {
+        "/health": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Check API health",
+                "operationId": "cd17eecbd5d985b748d8cb683df8f44d",
+                "responses": {
+                    "200": {
+                        "description": "API is healthy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "API is healthy"
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local development server"
+                    },
+                    {
+                        "url": "https://paskelompok2.online",
+                        "description": "Production server"
+                    }
+                ]
+            }
+        },
+        "/user": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get authenticated user",
+                "operationId": "039c02674c17e81581bc2ea2555bb1e7",
+                "responses": {
+                    "200": {
+                        "description": "Current user data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local development server"
+                    },
+                    {
+                        "url": "https://paskelompok2.online",
+                        "description": "Production server"
+                    }
+                ]
+            }
+        },
+        "/ai/runs/latest/stocks": {
+            "get": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Get latest AI stock analysis",
+                "operationId": "9a6521623bd3aa6de821e98d11111480",
+                "responses": {
+                    "200": {
+                        "description": "Latest STOCKS run"
+                    },
+                    "403": {
+                        "description": "PRO subscription required"
+                    },
+                    "404": {
+                        "description": "No AI run found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ai/runs/latest/busy-hours": {
+            "get": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Get latest busy hours prediction",
+                "operationId": "d16acdc04c9f63c856b5f8b99a109902",
+                "responses": {
+                    "200": {
+                        "description": "Latest BUSY hours run"
+                    },
+                    "403": {
+                        "description": "PRO subscription required"
+                    },
+                    "404": {
+                        "description": "No AI run found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ai/runs/latest/portfolio": {
+            "get": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Get latest portfolio insights",
+                "operationId": "a951fc31a234d03e8a4bff65f57a227e",
+                "responses": {
+                    "200": {
+                        "description": "Latest PORTFOLIO run"
+                    },
+                    "403": {
+                        "description": "PRO subscription required"
+                    },
+                    "404": {
+                        "description": "No AI run found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ai/runs/analyze": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Run AI stock/restock analysis",
+                "operationId": "6b04116a68c2937973244124ea9f8657",
+                "responses": {
+                    "200": {
+                        "description": "AI analysis completed"
+                    },
+                    "403": {
+                        "description": "PRO subscription required"
+                    },
+                    "500": {
+                        "description": "AI analysis failed"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ai/runs/analyze-busy-hours": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Run AI busy hours analysis",
+                "operationId": "aec210e2d5166041eada72297e7d9a3a",
+                "responses": {
+                    "200": {
+                        "description": "Busy hour analysis completed"
+                    },
+                    "403": {
+                        "description": "PRO subscription required"
+                    },
+                    "500": {
+                        "description": "Analysis failed"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ai/runs/generate-portfolio": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Generate AI portfolio insights",
+                "operationId": "164a83d61cce9000a24334ba38da2bf0",
+                "responses": {
+                    "200": {
+                        "description": "Portfolio generated"
+                    },
+                    "403": {
+                        "description": "PRO subscription required"
+                    },
+                    "500": {
+                        "description": "Generation failed"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ai/recommendations/{recommendationId}/action": {
+            "patch": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Update AI recommendation action (DONE/IGNORE)",
+                "operationId": "a5ccca0a7041546b3f1b7c04bd85de94",
+                "parameters": [
+                    {
+                        "name": "recommendationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecommendationActionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Action updated"
+                    },
+                    "403": {
+                        "description": "PRO subscription required"
+                    },
+                    "404": {
+                        "description": "Recommendation not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new user",
+                "operationId": "08136088c4862c313b35d6518bab8d3a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthRegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Register berhasil."
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login user",
+                "operationId": "99d66635c4992aeaa6aa44ff653d0563",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthLoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login berhasil."
+                                        },
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
+        "/auth/session": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Check current session validity",
+                "operationId": "746490ba8d73ba45f16d3dbc80a4d719",
+                "responses": {
+                    "200": {
+                        "description": "Session valid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Session valid."
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/billing/subscribe": {
+            "post": {
+                "tags": [
+                    "Billing"
+                ],
+                "summary": "Subscribe to PRO plan via Midtrans",
+                "operationId": "e54f227aa47c4933a8e80699684b7346",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BillingSubscribeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Subscription created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "subscription": {
+                                            "$ref": "#/components/schemas/Subscription"
+                                        },
+                                        "payment": {
+                                            "$ref": "#/components/schemas/Payment"
+                                        },
+                                        "payment_url": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/billing/webhook": {
+            "post": {
+                "tags": [
+                    "Billing"
+                ],
+                "summary": "Midtrans payment webhook (public)",
+                "operationId": "11555829615560b0bb90fdb32e18b7f0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "order_id": {
+                                        "type": "string"
+                                    },
+                                    "transaction_status": {
+                                        "type": "string"
+                                    },
+                                    "payment_type": {
+                                        "type": "string"
+                                    },
+                                    "transaction_time": {
+                                        "type": "string"
+                                    },
+                                    "gross_amount": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Webhook processed"
+                    },
+                    "400": {
+                        "description": "Invalid notification"
+                    }
+                }
+            }
+        },
+        "/billing/active": {
+            "get": {
+                "tags": [
+                    "Billing"
+                ],
+                "summary": "Get active subscription",
+                "operationId": "7a52f58c1dcd78a8f892f313b80b2a71",
+                "responses": {
+                    "200": {
+                        "description": "Active subscription data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Subscription"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/categories": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "List all categories",
+                "operationId": "b1b247b2b491b0491c3c728dc33f23f0",
+                "responses": {
+                    "200": {
+                        "description": "Categories retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Category"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Create a new category",
+                "operationId": "c86cd7a85ad06a4fe905bfab62146952",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoryStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Category created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Category"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/categories/products": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "List categories with their products",
+                "operationId": "506518fd7f187045b2ed6b24da28f03d",
+                "responses": {
+                    "200": {
+                        "description": "Categories with products retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Category"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/categories/{category}": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category by ID",
+                "operationId": "f9287689f645443ba435d93df47f30ab",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Category"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Update a category",
+                "operationId": "f1942ffe6e65375d41c9313e0567b4a6",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoryUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Category updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Category"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Delete a category",
+                "operationId": "f69c42592438da16400142d1ed3d30e0",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/categories/{id}/status": {
+            "patch": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Update category active status",
+                "operationId": "03a08a9c5b53b4c42c480b0f45acceb2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoryStatusRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Category"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "List all products",
+                "operationId": "080f057905dc32d2f11065d606dc4cd6",
+                "responses": {
+                    "200": {
+                        "description": "Products retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Product"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Create a new product",
+                "operationId": "eddf8c7847239ddc1040daadd814e21b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProductStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Product"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/products/{product}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get product by ID",
+                "operationId": "c5ec5b4fb4c3790c73e9849244665f45",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Product"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Update a product",
+                "operationId": "f7375aee24e5fccaf1567852e3492363",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProductUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Product"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Delete a product",
+                "operationId": "fb827fecd27dd65fa2b514023be16841",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get authenticated user profile",
+                "operationId": "c6a79007a56511faa6f48397a2d15867",
+                "responses": {
+                    "200": {
+                        "description": "Profile retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Profile"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update user profile (also accepts PATCH)",
+                "operationId": "74599296b1816be41ad4228975229966",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProfileUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Profile"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Create user profile",
+                "operationId": "2d25f72d512e96b4dfc6ff6d41bd3c3b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProfileStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Profile created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Profile"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Profile already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Delete / reset user profile",
+                "operationId": "146e3d0726049246ab0e167e0e7ad1bb",
+                "responses": {
+                    "200": {
+                        "description": "Profile deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile deleted / reset successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/reports": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Get sales reports for all periods",
+                "operationId": "81a8afd2aa3c69c6b5565682c3a78dd7",
+                "responses": {
+                    "200": {
+                        "description": "Report data retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReportResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/reports/sales-history": {
+            "get": {
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Get paginated sales history",
+                "operationId": "20d9dbeffb4e2b61043b05b6f2babad0",
+                "parameters": [
+                    {
+                        "name": "period",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "semua"
+                        },
+                        "example": "hari_ini"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        },
+                        "example": 10
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "mie"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sales history retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/transactions": {
+            "get": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "List all transactions (latest 50)",
+                "operationId": "985f8d6a4ee65fbeaf1513cb4f53a3e8",
+                "responses": {
+                    "200": {
+                        "description": "Transactions retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Transaction"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Create a new transaction (SALE/PURCHASE/ADJUSTMENT)",
+                "operationId": "ab25dfb146a297963c806c61ebc53c40",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Transaction created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Transaction"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/transactions/{id}": {
+            "get": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Get transaction detail",
+                "operationId": "0cef9d26f188e69308596914577e6835",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Transaction"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Transaction not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AuthRegisterRequest": {
+                "required": [
+                    "name",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com",
+                        "maxLength": 255
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "secret123",
+                        "minLength": 6
+                    }
+                },
+                "type": "object"
+            },
+            "AuthLoginRequest": {
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "secret123"
+                    }
+                },
+                "type": "object"
+            },
+            "ProductStoreRequest": {
+                "required": [
+                    "name",
+                    "price",
+                    "stock"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Mie Goreng Aceh",
+                        "maxLength": 255
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 3500
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Makanan khas Aceh",
+                        "nullable": true
+                    },
+                    "stock": {
+                        "type": "integer",
+                        "example": 40
+                    },
+                    "image": {
+                        "description": "Product image (max 2MB)",
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ProductUpdateRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Mie Goreng Aceh",
+                        "maxLength": 255
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 4000
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Updated description",
+                        "nullable": true
+                    },
+                    "stock": {
+                        "type": "integer",
+                        "example": 50
+                    },
+                    "image": {
+                        "description": "Product image (max 2MB)",
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "CategoryStoreRequest": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Makanan",
+                        "maxLength": 255
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Kategori makanan ringan dan berat",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "CategoryUpdateRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Makanan Ringan",
+                        "maxLength": 255
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Kategori makanan ringan",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "CategoryStatusRequest": {
+                "required": [
+                    "is_active"
+                ],
+                "properties": {
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "TransactionStoreRequest": {
+                "required": [
+                    "trx_type",
+                    "trx_date",
+                    "payment_method",
+                    "items"
+                ],
+                "properties": {
+                    "trx_type": {
+                        "type": "string",
+                        "example": "SALE",
+                        "enum": [
+                            "SALE",
+                            "PURCHASE",
+                            "ADJUSTMENT"
+                        ]
+                    },
+                    "trx_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-06-03"
+                    },
+                    "payment_method": {
+                        "type": "string",
+                        "example": "CASH"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "product_id",
+                                "quantity",
+                                "unit_price"
+                            ],
+                            "properties": {
+                                "product_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "quantity": {
+                                    "type": "integer",
+                                    "example": 2
+                                },
+                                "unit_price": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 3500
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "BillingSubscribeRequest": {
+                "required": [
+                    "plan_name"
+                ],
+                "properties": {
+                    "plan_name": {
+                        "type": "string",
+                        "example": "PRO",
+                        "enum": [
+                            "PRO"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "ProfileStoreRequest": {
+                "properties": {
+                    "bio": {
+                        "type": "string",
+                        "example": "Pemilik toko kelontong",
+                        "nullable": true
+                    },
+                    "image": {
+                        "description": "Profile image",
+                        "type": "string",
+                        "format": "binary"
+                    }
+                },
+                "type": "object"
+            },
+            "ProfileUpdateRequest": {
+                "properties": {
+                    "bio": {
+                        "type": "string",
+                        "example": "Updated bio",
+                        "nullable": true
+                    },
+                    "image": {
+                        "description": "Profile image",
+                        "type": "string",
+                        "format": "binary"
+                    }
+                },
+                "type": "object"
+            },
+            "RecommendationActionRequest": {
+                "required": [
+                    "action_type"
+                ],
+                "properties": {
+                    "action_type": {
+                        "type": "string",
+                        "example": "DONE",
+                        "enum": [
+                            "DONE",
+                            "IGNORE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Product": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Mie Goreng Aceh"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 3500
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Makanan khas Aceh"
+                    },
+                    "image_url": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "category": {
+                        "$ref": "#/components/schemas/Category"
+                    },
+                    "stocks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Stock"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Stock": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "stock_on_hand": {
+                        "type": "integer",
+                        "example": 40
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Category": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Makanan"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "products": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Product"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Transaction": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "trx_type": {
+                        "type": "string",
+                        "enum": [
+                            "SALE",
+                            "PURCHASE",
+                            "ADJUSTMENT"
+                        ]
+                    },
+                    "trx_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-06-03"
+                    },
+                    "payment_method": {
+                        "type": "string",
+                        "example": "CASH"
+                    },
+                    "paid_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "total_amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 7000
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TransactionItem"
+                        }
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                },
+                "type": "object"
+            },
+            "TransactionItem": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "transaction_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "unit_price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 3500
+                    },
+                    "line_price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 7000
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "product": {
+                        "$ref": "#/components/schemas/Product"
+                    }
+                },
+                "type": "object"
+            },
+            "Profile": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "bio": {
+                        "type": "string",
+                        "example": "Pemilik toko",
+                        "nullable": true
+                    },
+                    "image_url": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Subscription": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "plan_name": {
+                        "type": "string",
+                        "example": "PRO"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 29000
+                    },
+                    "duration_days": {
+                        "type": "integer",
+                        "example": 30
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "PENDING",
+                            "ACTIVE",
+                            "EXPIRED"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Payment": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "subscription_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "order_id": {
+                        "type": "string",
+                        "example": "ordered-uuid"
+                    },
+                    "gross_amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 29000
+                    },
+                    "payment_type": {
+                        "type": "string",
+                        "example": "MIDTRANS"
+                    },
+                    "transaction_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "PENDING",
+                            "SETTLEMENT",
+                            "EXPIRED",
+                            "CANCEL",
+                            "DENY"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "AiRun": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "type_ai": {
+                        "type": "string",
+                        "enum": [
+                            "STOCKS",
+                            "BUSY",
+                            "PORTFOLIO"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "COMPLETED",
+                            "FAILED"
+                        ]
+                    },
+                    "generated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "total_products": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "seasonal_insight": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "error_message": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "AiRecommendation": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "ai_run_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_name": {
+                        "type": "string"
+                    },
+                    "current_stock": {
+                        "type": "integer"
+                    },
+                    "recommed_restok_qty": {
+                        "type": "integer"
+                    },
+                    "restock_min": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "restock_max": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "restock_label": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "risk_level": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "days_until_emty": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "risk_point": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                },
+                "type": "object"
+            },
+            "AiRecommendationAction": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "ai_recommendation_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "action_type": {
+                        "type": "string",
+                        "enum": [
+                            "DONE",
+                            "IGNORE"
+                        ]
+                    },
+                    "action_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "AiPortfolioInsight": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "ai_run_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "insight": {
+                        "type": "string"
+                    },
+                    "total_omset_minggu_ini": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "total_transaksi": {
+                        "type": "integer"
+                    },
+                    "rata_rata_transaksi_per_hari": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "bintang_warung": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "BusyHourDailyForecast": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "ai_run_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "forecast_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "day_name": {
+                        "type": "string"
+                    },
+                    "is_weekend": {
+                        "type": "boolean"
+                    },
+                    "peak_hour": {
+                        "type": "integer"
+                    },
+                    "total_predicted_trx": {
+                        "type": "integer"
+                    },
+                    "total_predicted_revenue": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                },
+                "type": "object"
+            },
+            "ReportData": {
+                "properties": {
+                    "total_pendapatan": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "pendapatan_vs_sebelumnya": {
+                        "properties": {
+                            "nilai_sebelumnya": {
+                                "type": "number",
+                                "format": "float"
+                            },
+                            "persentase_perubahan": {
+                                "type": "number",
+                                "format": "float"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "total_transaksi": {
+                        "type": "integer"
+                    },
+                    "rata_rata_keranjang": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "tren_penjualan": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "date": {
+                                    "type": "string",
+                                    "format": "date"
+                                },
+                                "total": {
+                                    "type": "number",
+                                    "format": "float"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "produk_terlaris": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "total_quantity": {
+                                    "type": "integer"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "transaksi_terakhir": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Transaction"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ReportResponse": {
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "properties": {
+                            "hari_ini": {
+                                "$ref": "#/components/schemas/ReportData"
+                            },
+                            "minggu_ini": {
+                                "$ref": "#/components/schemas/ReportData"
+                            },
+                            "bulan_ini": {
+                                "$ref": "#/components/schemas/ReportData"
+                            },
+                            "tahun_ini": {
+                                "$ref": "#/components/schemas/ReportData"
+                            },
+                            "sepanjang_masa": {
+                                "$ref": "#/components/schemas/ReportData"
+                            },
+                            "grafik_data": {
+                                "properties": {
+                                    "minggu_ini": {
+                                        "properties": {
+                                            "labels": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "values": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "bulan_ini": {
+                                        "properties": {
+                                            "labels": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "values": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "tahun_ini": {
+                                        "properties": {
+                                            "labels": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "values": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Enter your Sanctum token",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Authentication endpoints (register, login, session)"
+        },
+        {
+            "name": "Products",
+            "description": "Product CRUD operations"
+        },
+        {
+            "name": "Categories",
+            "description": "Category CRUD operations"
+        },
+        {
+            "name": "Transactions",
+            "description": "Transaction management"
+        },
+        {
+            "name": "Reports",
+            "description": "Sales reports and analytics"
+        },
+        {
+            "name": "Profile",
+            "description": "User profile management"
+        },
+        {
+            "name": "Billing",
+            "description": "Subscription and payment management"
+        },
+        {
+            "name": "AI",
+            "description": "AI-powered analytics features"
+        },
+        {
+            "name": "Health",
+            "description": "API health check"
+        }
+    ]
+}

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 
 class BillingController extends Controller
 {
@@ -19,6 +20,28 @@ class BillingController extends Controller
         ],
     ];
 
+    #[OA\Post(
+        path: "/billing/subscribe",
+        summary: "Subscribe to PRO plan via Midtrans",
+        tags: ["Billing"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: "#/components/schemas/BillingSubscribeRequest")
+        ),
+        responses: [
+            new OA\Response(response: 201, description: "Subscription created", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "subscription", ref: "#/components/schemas/Subscription"),
+                    new OA\Property(property: "payment", ref: "#/components/schemas/Payment"),
+                    new OA\Property(property: "payment_url", type: "string"),
+                ],
+                type: "object"
+            )),
+            new OA\Response(response: 422, description: "Validation error"),
+        ]
+    )]
     public function subscribe(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -81,6 +104,28 @@ class BillingController extends Controller
         }
     }
 
+    #[OA\Post(
+        path: "/billing/webhook",
+        summary: "Midtrans payment webhook (public)",
+        tags: ["Billing"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/json",
+                schema: new OA\Schema(properties: [
+                    new OA\Property(property: "order_id", type: "string"),
+                    new OA\Property(property: "transaction_status", type: "string"),
+                    new OA\Property(property: "payment_type", type: "string"),
+                    new OA\Property(property: "transaction_time", type: "string"),
+                    new OA\Property(property: "gross_amount", type: "string"),
+                ], type: "object")
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Webhook processed"),
+            new OA\Response(response: 400, description: "Invalid notification"),
+        ]
+    )]
     public function webhook(Request $request): JsonResponse
     {
         \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
@@ -129,6 +174,7 @@ class BillingController extends Controller
 
     // TAMBAHAN: Webhook khusus untuk test di Postman
     // public function webhookTest(Request $request): JsonResponse
+    // Note: webhookTest is registered separately in routes
     // {
     //     // Langsung ambil data dari body JSON Postman
     //     $notification = (object) $request->all();
@@ -167,6 +213,21 @@ class BillingController extends Controller
     //     ]);
     // }
 
+    #[OA\Get(
+        path: "/billing/active",
+        summary: "Get active subscription",
+        tags: ["Billing"],
+        security: [["bearerAuth" => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Active subscription data", content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "message", type: "string"),
+                    new OA\Property(property: "data", ref: "#/components/schemas/Subscription"),
+                ],
+                type: "object"
+            )),
+        ]
+    )]
     public function active(Request $request): JsonResponse
     {
         $activeSubscription = Subscription::with(['payments'])
