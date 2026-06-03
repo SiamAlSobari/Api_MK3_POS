@@ -266,9 +266,10 @@ class ProductController extends Controller
                 // Determine current price or updated price
                 $price = $data["price"] ?? $product->price;
 
-                $product->stocks()->create([
-                    "stock_on_hand" => $stockToAdd,
-                ]);
+                $product->stocks()->updateOrCreate(
+                    ["product_id" => $product->id],
+                    ["stock_on_hand" => $stockToAdd]
+                );
 
                 $transaction = Transaction::create([
                     "user_id" => $request->user()->id,
