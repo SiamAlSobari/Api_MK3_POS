@@ -78,7 +78,6 @@ class AiRunController extends Controller
         $aiRun->aiRecommendations->each(function ($rec) {
             $rec->makeHidden([
                 "product_price",
-                "avg_daily_sales",
                 "target_days_coverage",
                 "stock_timeline",
                 "created_at",
