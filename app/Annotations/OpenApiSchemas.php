@@ -137,6 +137,7 @@ use OpenApi\Attributes as OA;
     required: ["action_type"],
     properties: [
         new OA\Property(property: "action_type", type: "string", enum: ["DONE", "IGNORE"], example: "DONE"),
+        new OA\Property(property: "stock_quantity", type: "integer", nullable: true, minimum: 0, example: 60, description: "Required when action_type=DONE. Must be within restock_min/restock_max or seasonal_min/seasonal_max range."),
     ],
 )]
 

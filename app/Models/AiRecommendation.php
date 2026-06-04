@@ -47,6 +47,8 @@ class AiRecommendation extends Model
         'seasonal_label',
         'seasonal_holiday',
         'seasonal_reason',
+        'selected_stocks',
+        'selected_seasonal_stocks',
     ];
 
     public function aiRun(): BelongsTo
@@ -92,5 +94,46 @@ class AiRecommendation extends Model
     public function getSeasonalReasonAttribute()
     {
         return $this->seasonalRecommendation?->reason;
+    }
+
+    public function getSelectedStocksAttribute()
+    {
+        if (!$this->relationLoaded('product') || !$this->product->relationLoaded('stocks')) {
+            return [];
+        }
+
+        return $this->product->stocks->filter(function ($stock) {
+            if ($this->restock_min !== null && $stock->stock_on_hand < $this->restock_min) {
+                return false;
+            }
+            if ($this->restock_max !== null && $stock->stock_on_hand > $this->restock_max) {
+                return false;
+            }
+            return true;
+        })->values();
+    }
+
+    public function getSelectedSeasonalStocksAttribute()
+    {
+        if (!$this->relationLoaded('product') || !$this->product->relationLoaded('stocks')) {
+            return [];
+        }
+
+        $seasonalMin = $this->seasonalRecommendation?->min;
+        $seasonalMax = $this->seasonalRecommendation?->max;
+
+        if ($seasonalMin === null && $seasonalMax === null) {
+            return [];
+        }
+
+        return $this->product->stocks->filter(function ($stock) use ($seasonalMin, $seasonalMax) {
+            if ($seasonalMin !== null && $stock->stock_on_hand < $seasonalMin) {
+                return false;
+            }
+            if ($seasonalMax !== null && $stock->stock_on_hand > $seasonalMax) {
+                return false;
+            }
+            return true;
+        })->values();
     }
 }

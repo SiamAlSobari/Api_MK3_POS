@@ -59,6 +59,7 @@ class AiRunController extends Controller
                     $query->whereHas("product")->orderBy("risk_point", "desc");
                 },
                 "aiRecommendations.product",
+                "aiRecommendations.product.stocks",
                 "aiRecommendations.aiRecommendationActions",
                 "aiRecommendations.seasonalRecommendation",
             ])
@@ -83,11 +84,11 @@ class AiRunController extends Controller
                 "created_at",
                 "updated_at",
                 "deleted_at",
-                "seasonal_min",
-                "seasonal_max",
-                "seasonal_label",
-                "seasonal_holiday",
-                "seasonal_reason",
+            ]);
+
+            $rec->append([
+                "selected_stocks",
+                "selected_seasonal_stocks",
             ]);
         });
 
@@ -696,6 +697,7 @@ class AiRunController extends Controller
 
         $request->validate([
             "action_type" => "required|in:DONE,IGNORE",
+            "stock_quantity" => "required_if:action_type,DONE|integer|min:0",
         ]);
 
         $recommendation = AiRecommendation::find($recommendationId);
@@ -710,6 +712,66 @@ class AiRunController extends Controller
             );
         }
 
+        // Validate stock_quantity within min/max range when action is DONE
+        if (
+            $request->action_type === "DONE" &&
+            $request->has("stock_quantity")
+        ) {
+            $stockQty = (int) $request->stock_quantity;
+            $rangeMin = $recommendation->seasonalRecommendation?->min ??
+                $recommendation->restock_min;
+            $rangeMax = $recommendation->seasonalRecommendation?->max ??
+                $recommendation->restock_max;
+
+            if ($rangeMin !== null && $stockQty < $rangeMin) {
+                return response()->json(
+                    [
+                        "success" => false,
+                        "message" =>
+                            "stock_quantity must be at least {$rangeMin}",
+                    ],
+                    422,
+                );
+            }
+
+            if ($rangeMax !== null && $stockQty > $rangeMax) {
+                return response()->json(
+                    [
+                        "success" => false,
+                        "message" =>
+                            "stock_quantity must not exceed {$rangeMax}",
+                    ],
+                    422,
+                );
+            }
+
+            // Update actual product stock
+            $product = $recommendation->product;
+            if ($product) {
+                \Illuminate\Support\Facades\DB::transaction(function () use (
+                    $product,
+                    $stockQty,
+                    $request,
+                    $recommendation,
+                ) {
+                    $product->stocks()->updateOrCreate(
+                        ["product_id" => $product->id],
+                        ["stock_on_hand" => $stockQty],
+                    );
+
+                    \App\Models\Transaction::create([
+                        "user_id" => $request->user()->id,
+                        "trx_type" => "ADJUSTMENT",
+                        "trx_date" => now(),
+                        "payment_method" => "ADJUSTMENT",
+                        "paid_at" => now(),
+                        "total_amount" =>
+                            $stockQty * ($product->price ?? 0),
+                    ]);
+                });
+            }
+        }
+
         // Create or update action
         $action = AiRecommendationAction::updateOrCreate(
             ["ai_recommendation_id" => $recommendationId],
@@ -719,10 +781,32 @@ class AiRunController extends Controller
             ],
         );
 
+        // Load recommendation with full data matching latestStocks format
+        $recommendation->load([
+            "product.stocks",
+            "seasonalRecommendation",
+            "aiRecommendationActions",
+        ]);
+        $recommendation->append([
+            "selected_stocks",
+            "selected_seasonal_stocks",
+        ]);
+        $recommendation->makeHidden([
+            "product_price",
+            "target_days_coverage",
+            "stock_timeline",
+            "created_at",
+            "updated_at",
+            "deleted_at",
+        ]);
+
         return response()->json([
             "success" => true,
             "message" => "Action updated successfully",
-            "data" => $action,
+            "data" => [
+                "action" => $action,
+                "recommendation" => $recommendation,
+            ],
         ]);
     }
 }
